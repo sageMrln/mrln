@@ -24,7 +24,7 @@ self.addEventListener('fetch', function(e){
     // network-first: always try for the freshest app, fall back to cache offline
     e.respondWith(
       fetch(req).then(function(resp){
-        // Akashi (split-repo audit): never cache a bad answer — a 404/503 window
+        // never cache a bad answer — a 404/503 window
         // would permanently poison the offline copy of the app for that user.
         try{ if(resp && resp.ok && resp.type === 'basic'){ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); } }catch(_){}
         return resp;
