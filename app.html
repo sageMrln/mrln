@@ -376,9 +376,6 @@
      location · status) — the demo profile's shortness is not a layout guarantee.
      All three lines reserve the lane. */
   @media (max-width:859px){ header.hud .eyebrow, header.hud h1, header.hud .sub{ padding-right:112px; } }
-  /* N24 (Arthur r5): "Status: ACTIVE" is a constant carrying zero bits — below 860
-     it cost a wrapped line in a 152px lane. Phones drop it; desktop keeps the HUD line. */
-  @media (max-width:859px){ .hdr-status{ display:none; } }
   @media (min-width:1440px){ .hdr-utils{ right:22px; } }
   .hdrbtn{ width:44px; height:44px; display:flex; align-items:center; justify-content:center;
     background:var(--panel); border:1px solid var(--line); border-radius:var(--r-c);
@@ -404,6 +401,10 @@
   .gear-group{ display:flex; flex-direction:column; gap:4px; }
   .gear-group-h{ font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--txt-dim); font-weight:600; margin:24px 0 8px; }
   .gear-group:first-child .gear-group-h{ margin-top:4px; }
+  .gear-note{ font-size:14px; line-height:1.45; color:var(--txt); }
+  .gear-status{ font-size:13px; font-family:var(--font-mono); padding:2px 0 6px; }
+  .gear-body .bakechk{ border-radius:var(--r-c); min-height:44px; padding:6px 10px; font-size:13px; }
+  .gear-body .localebar .bakechk input{ width:20px; height:20px; min-height:0; max-height:none; flex:0 0 auto; }
   .gear-body .localebar .iconbtn{ width:100%; display:flex; align-items:center; gap:8px; justify-content:flex-start; text-align:left; }
   @media (min-width:860px){
     /* N18 desktop: a centred 560px card over a scrim, the rail stays visible,
@@ -411,9 +412,9 @@
     html[data-nav=sections] .gear-panel{ left:216px; padding:24px 40px; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — same dimming-veil class as the directory backdrop */; }
     html[data-nav=sections] .gear-panel .gear-card{ max-width:560px; margin:0 auto; background:var(--bg); border:1px solid var(--line); border-radius:var(--r-l); padding:20px 22px; box-shadow:var(--shadow-4); }
   }
-  /* Arthur P1: the Home cell hints its directory on re-tap (stats lives there) */
-  nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:5px; bottom:3px;
-    font-size:13px; line-height:1; color:var(--txt-dim); }
+  /* an open section menu must not swallow taps on the other dock buttons */
+  .dock-dirback.open ~ nav.dock{ z-index:63; }
+  .hdrbtn.hdrbtn-lbl{ width:auto; padding:0 12px; gap:6px; font-size:14px; font-weight:600; font-family:var(--font-body); }
   .dockutil.warn{ color:var(--red); }
   .dockutil.warn::after{ content:''; position:absolute; top:6px; right:8px; width:8px; height:8px;
     border-radius:50%; background:var(--red); }
@@ -832,7 +833,7 @@
   @media (prefers-reduced-motion: no-preference){ .ir-skel{ animation:skelShimmer 1.25s ease-in-out infinite; } }
   @keyframes skelShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
   .ir-tools{ display:none; gap:7px; flex:0 0 auto; }
-  .ir-e,.ir-x{ width:36px; height:36px; border-radius:10px; background:transparent; cursor:pointer; font-size:14px; display:inline-flex; align-items:center; justify-content:center; transition:background .15s; }
+  .ir-e,.ir-x{ width:44px; height:44px; border-radius:10px; background:transparent; cursor:pointer; font-size:14px; display:inline-flex; align-items:center; justify-content:center; transition:background .15s; }
   .ir-e{ border:1px solid var(--cyan-dim); color:var(--cyan); } .ir-e:hover{ background:rgba(var(--accent-rgb),.10); }
   .ir-x{ border:1px solid var(--red); color:var(--red); } .ir-x:hover{ background:rgba(var(--bad-rgb),.10); }
   .ir-editfields{ display:flex; gap:8px; margin-top:9px; min-width:0; flex-wrap:wrap; }
@@ -850,7 +851,14 @@
   /* EDIT MODE reveals the tools + category-delete + the add surfaces; DISPLAY hides them all */
   #expenses.budget-editing .ir-tools{ display:flex; }
   #expenses.budget-editing .bud-catdel{ display:inline-flex; }
-  #expenses:not(.budget-editing) #addCostCard{ display:none; }
+  #expenses:not(.budget-editing):not(.adding) #addCostCard{ display:none; }
+  .bud-add{ margin-left:auto; padding:8px 14px; font-size:14px; }
+  #customList .item-row[data-id]{ cursor:pointer; }
+  .editing-row .ir-tools{ display:flex; }
+  .ir-editfields.ir-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .ir-grid label{ display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--txt-dim); min-width:0; }
+  .ir-grid input, .ir-grid select{ width:100%; max-width:none; height:44px; flex:0 0 auto; }
+  @media (min-width:860px){ .ir-editfields.ir-grid{ grid-template-columns:2fr 1.6fr 1fr 1.4fr; } }
   #expenses:not(.budget-editing) #budCatAdd{ display:none; }
   .meterlbl{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:13px;color:var(--txt-dim);margin-top:4px}
 
@@ -1500,6 +1508,15 @@
     display:inline-flex;align-items:center;justify-content:center;line-height:1}
   .iconbtn:hover{border-color:var(--cyan);box-shadow:var(--glow);color:var(--bright)}
   .localebar .iconbtn{font-size:13px;padding:6px 10px}
+
+  /* phones: the header is a compact 56px app bar — wordmark left, Settings + Your data right */
+  @media (max-width:620px){
+    html[data-nav] .wrap{ padding-top:8px; }
+    html[data-nav] header.hud{ display:flex; align-items:center; height:56px; padding:0 6px 0 14px; border:1px solid var(--line); border-radius:12px; }
+    html[data-nav] header.hud .eyebrow, html[data-nav] header.hud .sub, html[data-nav] header.hud .pillbar{ display:none; }
+    html[data-nav] header.hud h1{ font-size:22px; margin:0; padding-right:0; }
+    html[data-nav] .hdr-utils{ position:static; margin-left:auto; gap:6px; }
+  }
 </style>
 </head>
 <body>
@@ -1550,7 +1567,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </select>
     </div>
     <div class="lk-logo">MRLN</div>
-    <div class="lk-sub" data-i18n="// SECURE ACCESS · MONTHLY KEY">// SECURE ACCESS · MONTHLY KEY</div>
+    <div class="lk-sub" data-i18n="Money & health tracker">Money &amp; health tracker</div>
     <p class="lk-what" data-i18n="MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.">MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.</p>
     <label for="lkInput" data-i18n="Access key">Access key</label>
     <input id="lkInput" type="text" placeholder="MRLN-..." autocomplete="off" spellcheck="false">
@@ -1669,7 +1686,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h5>5. Your data and responsibility</h5>
       <p>Your information is stored on your own device (see the Privacy Policy). You are responsible for keeping your own backups — the App can export your data at any time. We are not responsible for data lost because a device is lost, broken, wiped, or its storage cleared. You are responsible for the accuracy of what you enter and for how you act on the App's outputs.</p>
       <h5>6. Payment, keys and refunds</h5>
-      <p>The App may require a paid access key. Payments are handled by a third-party payment provider, whose terms and privacy policy also apply; we do not receive or store your full card details. We offer a 30-day money-back guarantee: if you are not happy within 30 days of your purchase, contact us at Kontaktmrln@gmail.com and we will refund it. This guarantee is in addition to, and more generous than, your mandatory statutory consumer rights under Danish and EU law, which are unaffected.</p>
+      <p>The App may require a paid access key. Payments are handled by a third-party payment provider, whose terms and privacy policy also apply; we do not receive or store your full card details. We offer a 30-day money-back guarantee: if you are not happy within 30 days of your purchase, contact us at Kontaktmrln@gmail.com and we will refund it. This guarantee is in addition to your mandatory statutory consumer rights under Danish and EU law, which are unaffected.</p>
       <h5>7. Acceptable use</h5>
       <p>Do not use the App unlawfully, to harm others, to attempt to breach or tamper with its integrity or licensing, or in any way that infringes rights or applicable law.</p>
       <h5>8. "As is" — no warranty</h5>
@@ -1922,7 +1939,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </select></div>
     <div class="lc"><label data-i18n="Layout" for="layoutSel">Layout</label>
       <select id="layoutSel">
-        <option value="command" data-i18n="Command">Command</option>
+        <option value="command" data-i18n="Classic">Classic</option>
         <option value="editorial" data-i18n="Editorial">Editorial</option>
         <option value="analyst" data-i18n="Analyst">Analyst</option>
         <option value="canvas" data-i18n="Canvas">Canvas</option>
@@ -1949,21 +1966,21 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <button class="iconbtn" id="tourBtn" title="Replay the tour" data-i18n="❔ Tour">❔ Tour</button>
     <button class="iconbtn" id="setupBtn" title="Re-run setup / start fresh" data-i18n="⚙ Setup">⚙ Setup</button>
     <button class="iconbtn" id="soundBtn" data-i18n-skip title="Sound on/off">🔊</button>
-    <button class="iconbtn" id="openSaveBtn" title="Open / Save — copy your link, install, or open in your browser" data-i18n="↗ Open / Save">↗ Open / Save</button>
+    <button class="iconbtn" id="openSaveBtn" title="Install MRLN on this device, or copy your link" data-i18n="📲 Install or copy link">📲 Install or copy link</button>
     <button class="iconbtn" id="wipeBtn" title="Erase everything MRLN stored on this device" data-i18n="🗑 Delete all my data" style="color:var(--red)">🗑 Delete all my data</button>
   </div>
 
 
   <!-- HEADER -->
   <header class="hud">
-    <div class="eyebrow">// Personal Finance Command Center</div>
+    <div class="eyebrow">Money &amp; health tracker</div>
     <h1 data-i18n-skip>MRLN</h1>
-    <div class="sub" id="hdrSub">Operator · Status: ACTIVE</div>
+    <div class="sub" id="hdrSub" data-i18n-skip></div>
     <div class="pillbar">
-      <span class="pill">AGE <b id="hdrAge">—</b></span>
-      <span class="pill">WORK <b id="hdrEmployer">—</b></span>
-      <span class="pill" id="hdrGradePill" title="Your overall life grade — tap Stats for the full breakdown">GRADE <b id="hdrGrade">—</b></span>
-      <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN">STREAK <b id="streakN">0</b></span>
+      <span class="pill" id="hdrAgePill">AGE <b id="hdrAge">—</b></span>
+      <span class="pill" id="hdrWorkPill">WORK <b id="hdrEmployer">—</b></span>
+      <span class="pill" id="hdrGradePill" title="Your overall grade from S (best) to E, built from your money and health numbers. See Stats &amp; Grades for why." style="display:none">Overall grade <b id="hdrGrade">—</b></span>
+      <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN"><span data-i18n="Streak">Streak</span> <b id="streakN">0</b></span>
     </div>
 
   </header>
@@ -1983,7 +2000,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <button class="tab" data-p="stats"><span class="ix">14</span>Stats &amp; Grades</button>
     <button class="tab" data-p="notebook"><span class="ix">15</span>Notebook</button>
     <button class="tab" data-p="media"><span class="ix">16</span>Media Log</button>
-    <button class="tab" data-p="connect"><span class="ix">17</span>Connect</button>
+    <button class="tab" data-p="connect"><span class="ix">17</span>Move data</button>
     <button class="tab" data-p="log"><span class="ix">17</span>Change Log</button>
   </nav>
 
@@ -2038,8 +2055,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </button>
     </div>
     <div class="card">
-      <h2>Mission Briefing</h2>
-      <div class="desc">Your whole plan in one screen. Built from your own figures — income, bills and subscriptions. Every number below is computed from one shared model, so the tabs always agree.</div>
+      <h2>Your plan</h2>
+      <div class="desc">Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.</div>
       <div class="row2">
         <div>
           <ul class="clean">
@@ -2063,7 +2080,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <section class="panel" id="income">
     <div class="card" id="incomeGeneric">
       <h2>Your Income</h2>
-      <div class="desc">Your monthly take-home (after tax). Change these anytime with <b>⚙ Setup</b> or <b>🤖 Assistant MRLN</b>.</div>
+      <div class="desc">Your monthly take-home pay (after tax). Change it any time below.</div>
       <table>
         <tr><th>Scenario</th><th style="text-align:right">Per month</th></tr>
         <tr><td>A slow month</td><td class="num" id="incLow">—</td></tr>
@@ -2072,9 +2089,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </table>
       <div class="note">Your simulators and savings projection use the <b>typical</b> month as the baseline.</div>
       <div class="note" id="incEditHint" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-color:var(--cyan-dim)">
-        <span>✎ To change your income, use Assistant MRLN — just type it plainly, like "I earn 18000 a month".</span>
-        <button class="btn" id="incQuickBtn" style="padding:6px 12px;font-size:13px">💬 Update income →</button>
+        <span>Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.</span>
+        <button class="btn" id="incEditBtn" type="button" aria-controls="incEditForm" aria-expanded="false" style="padding:6px 12px;font-size:13px">✎ Change income</button>
+        <button class="btn ghost" id="incQuickBtn" style="padding:6px 12px;font-size:13px">💬 Ask the assistant</button>
       </div>
+      <div id="incEditForm" style="display:none;margin-top:12px">
+        <div class="form-row">
+          <div class="field"><label for="incInLow" data-i18n="A slow month">A slow month</label><input id="incInLow" type="number" min="0" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="incInAvg" data-i18n="Typical month">Typical month</label><input id="incInAvg" type="number" min="0" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="incInHigh" data-i18n="A good month">A good month</label><input id="incInHigh" type="number" min="0" step="1" inputmode="numeric"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="incSaveBtn" type="button" data-i18n="Save income">Save income</button>
+          <button class="btn ghost" id="incCancelBtn" type="button" data-i18n="Cancel">Cancel</button>
+        </div>
+      </div>
+      <div id="incEditMsg" class="note" style="display:none;margin-top:10px" role="status"></div>
     </div>
 
     <div class="card" id="incomeHistory">
@@ -2104,7 +2134,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <section class="panel" id="expenses">
     <!-- Budget summary — the glance -->
     <div class="card">
-      <h2 data-i18n="Your Budget">Your Budget</h2>
+      <div class="bud-head">
+        <h2 data-i18n="Your Budget">Your Budget</h2>
+        <button class="btn bud-add" id="budAddBtn" type="button" aria-controls="addCostCard" aria-expanded="false" data-i18n="+ Add cost">+ Add cost</button>
+      </div>
       <div class="desc" data-i18n="Every recurring cost in one place — add, edit or remove any of them and every tab updates together. Items marked “varies” aren’t counted.">Every recurring cost in one place — add, edit or remove any of them and every tab updates together. Items marked “varies” aren’t counted.</div>
       <div class="subtotal" style="margin-bottom:16px">
         <div class="stat avg"><div class="lbl">Total / month</div><div class="val"><span id="expMonth">—</span><small class="ccySuffix"> kr</small></div></div>
@@ -2114,7 +2147,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="note" data-i18n="This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.">This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.</div>
     </div>
 
-    <!-- Add a cost (only shown in Budget edit mode) -->
+    <!-- Add a cost (opened by "+ Add cost" or Edit) -->
     <div class="card" id="addCostCard">
       <h2 data-i18n="Add a cost">Add a cost</h2>
       <div class="desc" data-i18n="Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.">Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.</div>
@@ -2124,10 +2157,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <div class="form-row">
         <div class="field"><label>Cost (<span class="ccyLbl">kr</span>)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
-        <div class="field"><label data-i18n="Billing">Billing</label><select id="addFreq"><option value="monthly" data-i18n="Monthly">Monthly</option><option value="quarterly" data-i18n="Quarterly">Quarterly</option><option value="yearly" data-i18n="Yearly">Yearly</option></select></div>
+        <div class="field"><label data-i18n="Billing">Billing</label><select id="addFreq"><option value="monthly" data-i18n="Monthly">Monthly</option><option value="quarterly" data-i18n="Quarterly">Quarterly</option><option value="yearly" data-i18n="Yearly">Yearly</option><option value="once" data-i18n="One-off (this month)">One-off (this month)</option></select></div>
       </div>
       <div class="field"><label data-i18n="Note (optional)">Note (optional)</label><input id="addNote" placeholder="What it’s for / why you keep it"></div>
-      <button class="btn" id="addBtn" data-i18n="+ Add to my finances">+ Add to my finances</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="addBtn" data-i18n="+ Add to my finances">+ Add to my finances</button>
+        <button class="btn ghost" id="addCloseBtn" type="button" data-i18n="Close">Close</button>
+      </div>
       <div id="addMsg" class="note" style="display:none"></div>
     </div>
 
@@ -2137,7 +2173,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <h2 data-i18n="Your costs">Your costs</h2>
         <button class="bud-toggle" id="budEditToggle" type="button" aria-pressed="false">✎ <span data-i18n="Edit">Edit</span></button>
       </div>
-      <div class="desc" data-i18n="Every recurring cost, grouped by category. Tap Edit to change a price, delete anything, or add a category.">Every recurring cost, grouped by category. Tap Edit to change a price, delete anything, or add a category.</div>
+      <div class="desc" data-i18n="Tap any cost to change or delete it. Tap Edit to add or remove categories.">Tap any cost to change or delete it. Tap Edit to add or remove categories.</div>
       <div id="customList"></div>
       <div id="budCatAdd">
         <div class="form-row" style="margin-top:14px">
@@ -2572,7 +2608,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
     <div class="card">
       <h2>Reminders 🔔</h2>
-      <div class="desc">Pick a time and we'll play a sound to remind you — daily, while the HUD is open. <span id="remNote" style="color:var(--amber)"></span></div>
+      <div class="desc">Pick a time and we'll play a sound to remind you — daily, while MRLN is open. <span id="remNote" style="color:var(--amber)"></span></div>
       <div class="form-row" style="margin-top:6px">
         <div class="field"><label>Time</label><input id="remTime" type="time"></div>
         <div class="field"><label>Label</label><input id="remLabel" placeholder="e.g. Log today's spending"></div>
@@ -2794,7 +2830,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   <section class="panel" id="log">
     <div class="card">
-      <h2>Time on the HUD ⏱</h2>
+      <h2>Time in MRLN ⏱</h2>
       <div class="desc">How long you've actively spent in here — it only counts while the tab is open and unlocked.</div>
       <div class="status">
         <div class="stat avg"><div class="lbl">Lifetime</div><div class="val" id="usageTotal" style="font-size:20px">—</div></div>
@@ -2810,14 +2846,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     </div>
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
-      <div class="desc">An audit trail of every change ever made — add, edit, delete, export. Stored inside this file and carried into every export, so the full history travels with you. (When this becomes the hosted product, the same log lives on a real server.)</div>
+      <div class="desc">Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.</div>
       <table class="logtable"><tbody id="logBody"></tbody></table>
     </div>
 
     <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
-  <footer>// MRLN · SELF-SUFFICIENT · offline assistant · auto-save + export · in-file audit log · not financial or medical advice · <span class="legal-open" data-legal role="button" tabindex="0" data-i18n="Terms · Privacy · Disclaimer">Terms · Privacy · Disclaimer</span></footer>
+  <footer>MRLN · works offline · saved on this device · not financial or medical advice · <span class="legal-open" data-legal role="button" tabindex="0" data-i18n="Terms · Privacy · Disclaimer">Terms · Privacy · Disclaimer</span></footer>
 </div>
 
 <!-- Floating: quick-update chat (opens above) + save/export -->
@@ -2850,13 +2886,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     </div>
   </div>
   <button class="chattoggle" id="chatToggle" data-i18n-skip>🤖 Assistant MRLN</button>
-  <label class="bakechk" id="bakeKeyWrap" title="Saves your key inside the file so it opens without re-typing. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="keep me signed in">keep me signed in</span></label>
-  <div class="badge" id="saveBadge">loaded</div>
+  <label class="bakechk" id="bakeKeyWrap" title="Backups then open without typing your key. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="Include my access key in backups">Include my access key in backups</span></label>
+  <div class="badge" id="saveBadge"></div>
   <button class="chattoggle" id="shareBlankBtn" title="Owner only — make a fresh file and the one key that unlocks it" data-i18n="📤 New file + key" style="display:none">📤 New file + key</button>
   <button class="chattoggle" id="mintBtn" title="Owner only — make a file + its key, or renew an existing file's key" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 New / renew key</button>
-  <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
-  <button class="chattoggle" id="dataBtn" title="Move your data between your devices (private)" data-i18n="⇄ Backup / Import">⇄ Backup / Import</button>
-  <button class="chattoggle" id="lockBtn" title="Lock the dashboard — you'll need your key to get back in" data-i18n="🔒 Lock / Log out">🔒 Lock / Log out</button>
+  <button class="savebtn" id="saveBtn" title="Download a backup file with all your data" data-i18n="⬇ Back up (download)">⬇ Back up (download)</button>
+  <button class="chattoggle" id="dataBtn" title="Copy your data to your other phone or browser" data-i18n="⇄ Move to another device">⇄ Move to another device</button>
+  <button class="chattoggle" id="lockBtn" title="Lock MRLN — you'll need your access key to open it again" data-i18n="🔒 Lock MRLN">🔒 Lock MRLN</button>
   <button class="botfab" id="botFab" title="Assistant MRLN — ask me anything" aria-label="Open Assistant MRLN" aria-expanded="false" data-i18n-skip>🤖</button>
   <button class="savefab" id="saveFab" title="Save, backup &amp; lock" aria-label="Save, backup and lock" aria-expanded="false">💾</button>
 </div>
@@ -3093,8 +3129,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       return s;
     }
     var SECTIONS=[
-      {key:'Home',   tabs:['overview','stats']},
-      {key:'Money',  tabs:['income','expenses','loan','flow','rule','checklist']},
+      {key:'Home',   tabs:['overview']},
+      {key:'Money',  tabs:['income','expenses','loan','flow','rule','checklist','stats']},
       {key:'Health', tabs:['gym','food']},
       {key:'Life',   tabs:['calendar','notebook','media']},
       {key:'Settings', tabs:['connect','log'], gear:true}
@@ -3115,19 +3151,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var hud=document.querySelector('header.hud'); if(!hud) return;
       headerUtils=document.createElement('div'); headerUtils.className='hdr-utils';
       var gearSec=null; SECTIONS.forEach(function(s){ if(s.gear) gearSec=s; });
-      var g=document.createElement('button'); g.type='button'; g.className='hdrbtn'; g.id='hdrGear';
+      var g=document.createElement('button'); g.type='button'; g.className='hdrbtn hdrbtn-lbl'; g.id='hdrGear';
       g.appendChild(icon('Settings'));
-      g.setAttribute('aria-label', T('Settings'));
+      var gl=document.createElement('span'); gl.className='hdr-lbl'; gl.textContent=T('Settings'); g.appendChild(gl);
       g.addEventListener('click', function(){
-        if(dir.classList.contains('open') && gearSec && dir.getAttribute('aria-label')===T(gearSec.key)){ closeDir(); return; }
-        if(gearSec) openDir(gearSec, g);
+        closeDir();
+        if(gearPanel && gearPanel.classList.contains('open')) closeGearSettings(); else openGearSettings();
       });
       headerUtils.appendChild(g);
       var sv=document.createElement('button'); sv.type='button'; sv.className='hdrbtn'; sv.id='hdrSave';
       sv.appendChild(icon('save'));
-      sv.setAttribute('aria-label', T('Save'));
+      sv.setAttribute('aria-label', T('Your data'));
       sv.setAttribute('data-util','save');
-      sv.addEventListener('click', function(){ var el=document.getElementById('saveFab'); if(el){ closeDir(); el.click(); } });
+      sv.addEventListener('click', function(){
+        closeDir(); openGearSettings();
+        var gd=document.getElementById('gearData'); if(gd) try{ gd.scrollIntoView({block:'start'}); }catch(_){ }
+      });
       headerUtils.appendChild(sv);
       hud.appendChild(headerUtils);
       var bar=document.querySelector('.savebar');
@@ -3135,8 +3174,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
     function syncHeaderLabels(){
       if(!headerUtils) return;
-      var g=headerUtils.querySelector('#hdrGear'); if(g) g.setAttribute('aria-label', T('Settings'));
-      var sv=headerUtils.querySelector('#hdrSave'); if(sv) sv.setAttribute('aria-label', T('Save'));
+      var g=headerUtils.querySelector('#hdrGear .hdr-lbl'); if(g) g.textContent=T('Settings');
+      var sv=headerUtils.querySelector('#hdrSave'); if(sv) sv.setAttribute('aria-label', T('Your data'));
     }
     function ensureGearPanel(){
       if(gearPanel) return;
@@ -3171,19 +3210,56 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var names={ 'Locale':(typeof t==='function'?t('Locale'):'Locale'),
                   'Appearance':(typeof t==='function'?t('Appearance'):'Appearance'),
                   'Help':(typeof t==='function'?t('Help'):'Help'),
-                  'Data':(typeof t==='function'?t('Data'):'Data') };
+                  'Your data':(typeof t==='function'?t('Your data'):'Your data') };
       [['Locale',     [lc('langSel'), lc('curSel'), lc('countryInp')]],
        ['Appearance', [lc('themeSel'), lc('layoutSel')]],
-       ['Help',       [lb.querySelector('#tourBtn'), lb.querySelector('#setupBtn'), lb.querySelector('#soundBtn')]],
-       ['Data',       [lb.querySelector('#openSaveBtn'), lb.querySelector('#wipeBtn')]]
+       ['Help',       [lb.querySelector('#tourBtn'), lb.querySelector('#setupBtn'), lb.querySelector('#soundBtn'), changeLogBtn()]],
+       ['Your data',  yourData(lb)]
       ].forEach(function(g){
         var wrap=document.createElement('div'); wrap.className='gear-group';
+        if(g[0]==='Your data') wrap.id='gearData';
         var h=document.createElement('div'); h.className='gear-group-h';
         h.setAttribute('data-i18n', g[0]); h.textContent=names[g[0]]||g[0];
         wrap.appendChild(h);
         g[1].forEach(function(n){ if(n) wrap.appendChild(n); });
         lb.appendChild(wrap);
       });
+    }
+    /* "Your data": where it lives, its status, and every backup / restore / move / delete
+       action in one place. NODE MOVES — the buttons keep their listeners. */
+    function yourData(lb){
+      function q(id){ return lb.querySelector('#'+id) || document.getElementById(id); }   // lb is still detached at init
+      var where=document.createElement('div'); where.className='gear-note';
+      var wk='Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.';
+      where.setAttribute('data-i18n', wk); where.textContent=T(wk);
+      var st=q('saveBadge'); if(st){ st.className='gear-status'; st.setAttribute('role','status'); }
+      var rb=document.createElement('button'); rb.type='button'; rb.className='iconbtn'; rb.id='restoreBtn';
+      rb.setAttribute('data-i18n','⬆ Restore from a backup'); rb.textContent=T('⬆ Restore from a backup');
+      var rf=document.createElement('input'); rf.type='file'; rf.id='restoreFile'; rf.accept='.html,.htm,.json,.txt'; rf.hidden=true;
+      rb.addEventListener('click', function(){ rf.click(); });
+      rf.addEventListener('change', function(){
+        var file=rf.files&&rf.files[0]; if(!file) return;
+        var rd=new FileReader();
+        rd.onload=function(){
+          var text=String(rd.result||''); rf.value='';
+          uiConfirm({ title:T('⬆ Restore this backup?'), message:T('This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.'), confirmText:T('Restore'), danger:false }, function(){
+            try{ importMasterHTML(text); if(typeof toast==='function') toast(T('✓ Backup restored')); closeGearSettings(); }
+            catch(e){ if(typeof toast==='function') toast('✗ '+e.message); }
+          });
+        };
+        rd.readAsText(file);
+      });
+      var mv=q('dataBtn'); if(mv) mv.addEventListener('click', function(){ closeGearSettings(); });
+      var tb=q('tourBtn'); if(tb) tb.addEventListener('click', function(){ closeGearSettings(); });   // the tour points at the shell behind
+      var os=q('openSaveBtn'); if(os) os.addEventListener('click', function(){ closeGearSettings(); });
+      ['saveBtn','dataBtn','lockBtn','shareBlankBtn','mintBtn'].forEach(function(id){ var b=q(id); if(b) b.className='iconbtn'; });
+      return [where, st, q('saveBtn'), rb, rf, mv, os, q('bakeKeyWrap'), q('lockBtn'), q('wipeBtn'), q('shareBlankBtn'), q('mintBtn')];
+    }
+    function changeLogBtn(){
+      var cl=document.createElement('button'); cl.type='button'; cl.className='iconbtn'; cl.id='changeLogBtn';
+      cl.setAttribute('data-i18n','🧾 Change log'); cl.textContent=T('🧾 Change log');
+      cl.addEventListener('click', function(){ closeGearSettings(); var lg=tabBtn('log'); if(lg) lg.click(); });
+      return cl;
     }
     function T(k){ return (typeof t==='function'? t(k) : k); }
     function tabLabel(tb){
@@ -3273,9 +3349,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         if(isOn) b.setAttribute('aria-current','page');
         b.setAttribute('data-sect', sec.key);
         b.addEventListener('click', function(){
-          if(sec.key==='Home' && (!act || act.key!=='Home' || !tabsNav.querySelector('.tab.active[data-p="overview"]'))){
-            var ov=tabBtn('overview'); if(ov){ closeDir(); ov.click(); return; }
-          }
+          if(sec.key==='Home'){ var ov=tabBtn('overview'); if(ov){ closeDir(); ov.click(); try{ window.scrollTo(0,0); }catch(_){ } return; } }
           if(dir.classList.contains('open') && dir.getAttribute('aria-label')===T(sec.key)){ closeDir(); return; }
           openDir(sec, b);
         });
@@ -3333,16 +3407,6 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       }
     });
     try{ new MutationObserver(function(){ rebuild(); }).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
-    /* Akashi (Stage-4 ruling): the sheet the dock's 💾 opens must itself carry the
-       ↗ Open/Save affordance — a delegate button so the contract is 2 taps, not 3. */
-    try{ var _sb=document.querySelector('.savebar'), _osb=document.getElementById('openSaveBtn');
-      if(_sb && _osb && !_sb.querySelector('.os-delegate')){
-        var _d=document.createElement('button'); _d.type='button'; _d.className='savebtn os-delegate';
-        _d.textContent=_osb.textContent||'\u2197 Open / Save';
-        _d.addEventListener('click', function(){ _osb.click(); });
-        _sb.insertBefore(_d, _sb.firstChild);
-      }
-    }catch(_){ }
     /* the fail-loud durability warning must pierce the dock exactly as it pierced
        the collapsed fab (Akashi constraint) — mirror .haswarn onto the save cell */
     try{ var _sbar=document.querySelector('.savebar');
@@ -3372,7 +3436,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
     if(_quotaWarned) return; _quotaWarned=true;   // once per session — warn, don't nag
     try{ if(typeof toast==='function') toast(t('Storage is full — export your data to free space.')); }catch(_){ }
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent=t('● Storage is full — download a backup to free space'); b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
   }
   // --- SAVE SAFETY: durability detection + fail-loud (Akashi contract). In-app browsers
   // (social webviews), private mode, and some file:// contexts silently drop localStorage on
@@ -3389,7 +3453,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(_durabilityWarned) return; _durabilityWarned=true;
     var el=document.getElementById('saveSafetyBanner');
     if(el && el.getAttribute('data-dismissed')!=='1') el.style.display='';
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent=t('● Not saving here — open MRLN in your browser'); b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
   }
   function _saveReplacer(k,v){
     // A food photo is dropped from localStorage ONLY once its bytes are confirmed in IndexedDB
@@ -3402,7 +3466,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     STATE.savedAt = nowISO();
     if(TEMPLATE_MODE){   // fresh share copy: never touch this device's storage
       var bt=document.getElementById('saveBadge');
-      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; } if(typeof _hudWarn==='function') _hudWarn();
+      if(bt){ bt.textContent=t('● Try mode — download a backup to keep your data'); bt.style.color='var(--amber)'; } if(typeof _hudWarn==='function') _hudWarn();
       return;
     }
     var _stuck=false;
@@ -3417,7 +3481,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
     if(!_stuck && !_quotaWarned) _warnNotDurable();           // wrote but didn't stick = ephemeral storage
     var b=document.getElementById('saveBadge');
-    if(b && !_quotaWarned && !_durabilityWarned){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
+    if(b && !_quotaWarned && !_durabilityWarned){ b.textContent=t('Saved on this device ✓'); b.style.color='var(--lime)'; }
   }
   // One-time migration + hydrate for food photos. Legacy entries carry an inline `photo`
   // data URL in localStorage; move those bytes into IndexedDB (then localStorage drops the
@@ -3659,6 +3723,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(it.varies) return 0;
     // financed / leased items with a payoff date stop counting once that date passes
     if(it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) && todayKey() > String(it.until)) return 0;
+    if(it.freq==='once') return String(it.on||'').slice(0,7)===ymNow() ? t*(Number(it.cost)||0) : 0;   // one-off: this month only
     if(it.cost != null){
       var c = Number(it.cost) || 0;
       return t * (it.freq==='yearly' ? c/12 : it.freq==='quarterly' ? c/3 : c);
@@ -3667,6 +3732,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   function groupTotal(g){ return g.items.reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(itemMonthly(it))); }, 0); }
   var GRAND = 0;
+  // one-off costs inside GRAND — they happen once, so a yearly total must not multiply them
+  function oneOffMonth(){ var s=0; MODEL.groups.forEach(function(g){ g.items.forEach(function(it){ if(it.freq==='once') s+=Math.round(itemMonthly(it)); }); }); return s; }
+  function yearTotal(){ var o=oneOffMonth(); return (GRAND-o)*12+o; }
   function recomputeGrand(){ GRAND = __sys.token() * MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
   recomputeGrand();
   function loanIncluded(){ return STATE.loanOn !== false; }   // toggle: include loan payment in the math (default on)
@@ -3842,7 +3910,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var sym = curInfo().sym;
     var mEl=document.getElementById('expMonth'), yEl=document.getElementById('expYear');
     if(mEl){ if(typeof countUp==='function') countUp(mEl, GRAND); else mEl.textContent='~'+fmtN(GRAND); }
-    if(yEl){ yEl.textContent='~'+fmtN(GRAND*12); }
+    if(yEl){ yEl.textContent='~'+fmtN(yearTotal()); }
     var host=document.getElementById('budgetBars'); if(!host) return;
     // biggest cost reads at a glance — sorted share bars (a 9-year-old sees "biggest bar = biggest cost")
     var cats=(MODEL.groups||[]).map(function(g){ return { icon:g.icon, name:g.name, total:groupTotal(g) }; })
@@ -4337,14 +4405,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var sym=curInfo().sym;
     var lm=document.getElementById('ledMonth'), ly=document.getElementById('ledYear');
     if(lm) lm.innerHTML='~'+fmtN(GRAND)+'<small> '+sym+'</small>';
-    if(ly) ly.innerHTML='~'+fmtN(GRAND*12)+'<small> '+sym+'</small>';
+    if(ly) ly.innerHTML='~'+fmtN(yearTotal())+'<small> '+sym+'</small>';
     var items=[];
     MODEL.groups.forEach(function(g){ (g.items||[]).forEach(function(it){ if(!it.varies) items.push({g:g,it:it}); }); });
     host.innerHTML = items.length ? items.map(function(x){
       var it=x.it, g=x.g;
-      var freqL = it.freq==='yearly'?t('Yearly'):it.freq==='quarterly'?t('Quarterly'):t('Monthly');
+      var freqL = it.freq==='yearly'?t('Yearly'):it.freq==='quarterly'?t('Quarterly'):it.freq==='once'?t('One-off'):t('Monthly');
       var raw = it.cost!=null ? Number(it.cost) : (Number(it.amt)||0);
-      var per = (it.cost!=null && it.freq && it.freq!=='monthly') ? (it.freq==='yearly'?'/yr':'/q') : '/mo';
+      var per = it.freq==='once' ? '' : (it.cost!=null && it.freq && it.freq!=='monthly') ? (it.freq==='yearly'?'/yr':'/q') : '/mo';
       return '<div class="sub-item"><div class="top"><div><div class="name">'+esc(t(it.name))+
         (it.custom?' <span class="tag now" style="font-size:13px;padding:1px 5px">'+t('ADDED')+'</span>':'')+'</div>'+
         '<div class="freq">'+esc(g.icon+' '+t(g.name))+' · '+freqL+'</div></div>'+
@@ -4471,6 +4539,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var overall = useBody ? Math.round(fin*0.55 + B.score*0.45) : fin;
     var oTier = tierOf(overall), c=tierRGB(oTier);
     var gp=document.getElementById('hdrGrade'); if(gp){ gp.textContent=M.dataComplete?oTier:'—'; gp.style.color='rgb('+c+')'; }   // header GRADE pill
+    var gpp=document.getElementById('hdrGradePill'); if(gpp) gpp.style.display=M.dataComplete?'':'none';   // no grade until there is data to grade
     if(typeof renderStats==='function') renderStats();
     var badge=document.getElementById('tierBadge'); if(badge){ badge.textContent=oTier+'-TIER · '+overall+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
     var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=overall+'%'; bar.style.background='rgb('+c+')'; }
@@ -4648,6 +4717,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(!g && cat){ g = { id:'g'+uid(), icon:'•', name:cat, items:[] }; MODEL.groups.push(g); logChange('add-category', cat); populateCatSelect(); }
     if(!g) g = MODEL.groups[MODEL.groups.length-1];
     var item = { id:uid(), name:name, detail:(note||'Added by you'), cost:Number(cost), freq:(freq||'monthly'), custom:true };
+    if(item.freq==='once') item.on = ymNow()+'-'+pad2(new Date().getDate());
     g.items.push(item);
     logChange('add-cost', name + ' → ' + g.name + ' (' + fmtN(itemMonthly(item)) + ' '+curInfo().sym+'/mo' + (freq!=='monthly'?', '+freq:'') + ')');
     refreshFinance(); renderManage(); return item;
@@ -4656,6 +4726,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var f = findItem(id); if(!f) return;
     f.it.cost = Number(cost); if(freq) f.it.freq = freq;
     logChange('update-cost', f.it.name + ' → ' + fmtN(itemMonthly(f.it)) + ' '+curInfo().sym+'/mo');
+    refreshFinance(); renderManage();
+  }
+  // full edit from the Budget row editor: name, category, amount, how often
+  function updateItem(id, ch){
+    var f = findItem(id); if(!f) return;
+    var it = f.it;
+    if(ch.name) it.name = ch.name;
+    if(ch.cost != null){ it.cost = Number(ch.cost); delete it.varies; }
+    if(ch.freq){ it.freq = ch.freq; if(ch.freq==='once'){ if(!it.on) it.on = ymNow()+'-'+pad2(new Date().getDate()); } else delete it.on; }
+    if(ch.cat && ch.cat!==f.g.name){
+      var g = MODEL.groups.filter(function(x){ return x.name===ch.cat; })[0];
+      if(g){ f.g.items = f.g.items.filter(function(x){ return x.id!==id; }); g.items.push(it); }
+    }
+    logChange('update-cost', it.name + (it.varies ? '' : ' → ' + fmtN(itemMonthly(it)) + ' '+curInfo().sym+'/mo'));
     refreshFinance(); renderManage();
   }
   function removeItem(id){
@@ -4700,6 +4784,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       msg.style.display='block'; msg.style.color='var(--lime)';
       msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' '+curInfo().sym+' — all simulators updated.';
     });
+    var panelEx = document.getElementById('expenses'), budAdd = document.getElementById('budAddBtn');
+    function setAdding(on){
+      if(!panelEx) return; panelEx.classList.toggle('adding', on);
+      if(budAdd) budAdd.setAttribute('aria-expanded', on?'true':'false');
+      if(on){ var n=document.getElementById('addName'); var cd=document.getElementById('addCostCard');
+        try{ cd.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){ }
+        if(n) setTimeout(function(){ try{ n.focus({preventScroll:true}); }catch(_){ } }, 50); }
+    }
+    if(budAdd) budAdd.addEventListener('click', function(){ setAdding(!panelEx.classList.contains('adding')); });
+    var addClose = document.getElementById('addCloseBtn');
+    if(addClose) addClose.addEventListener('click', function(){ setAdding(false); if(panelEx && panelEx.classList.contains('budget-editing') && budToggle) budToggle.click(); });
     var addCatBtn = document.getElementById('addCatBtn');
     if(addCatBtn) addCatBtn.addEventListener('click', function(){
       var n = document.getElementById('newCatName').value, ic = document.getElementById('newCatIcon').value;
@@ -4710,18 +4805,29 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var t = e.target;
       var del = t.closest('[data-del]');     if(del){ var did=del.getAttribute('data-del'); var df=findItem(did); uiConfirm({title:'🗑️ Delete item?', message:'Delete <b>'+esc(df?df.it.name:'this item')+'</b> from your finances? This can’t be undone.'}, function(){ removeItem(did); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.remove(); }); return; }
       var ed  = t.closest('[data-edit]');    if(ed){ editId = ed.getAttribute('data-edit'); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.tap(); renderManage(); return; }
+      var row = t.closest('.item-row[data-id]'); if(row && !t.closest('button, input, select')){ openRowEditor(row.getAttribute('data-id')); return; }
       var ca  = t.closest('[data-cancel]');  if(ca){ editId = null; renderManage(); return; }
       var dc  = t.closest('[data-delcat]');  if(dc){ var cn=dc.getAttribute('data-delcat'); var cg=MODEL.groups.filter(function(x){return x.name===cn;})[0]; uiConfirm({title:'🗑️ Delete category?', message:'Delete <b>'+esc(cn)+'</b> and its '+(cg?cg.items.length:0)+' item(s)? This can’t be undone.'}, function(){ removeCategory(cn); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.remove(); }); return; }
       var sv  = t.closest('[data-save]');
       if(sv){
-        var id = sv.getAttribute('data-save');
+        var id = sv.getAttribute('data-save'), cur = findItem(id); if(!cur) return;
         var costEl = list.querySelector('[data-cost="'+id+'"]'), freqEl = list.querySelector('[data-freq="'+id+'"]');
-        var c = parseFloat(costEl.value);
-        if(!(c>=0) || isNaN(c)){ costEl.style.borderColor='var(--red)'; return; }
-        editId = null; updateItemPrice(id, c, freqEl.value);
+        var nameEl = list.querySelector('[data-ename="'+id+'"]'), catEl = list.querySelector('[data-ecat="'+id+'"]');
+        var nm = (nameEl.value||'').trim(), blank = !String(costEl.value).trim(), c = parseFloat(costEl.value);
+        if(!nm){ nameEl.style.borderColor='var(--red)'; return; }
+        if(!(blank && cur.it.varies) && (!(c>=0) || isNaN(c))){ costEl.style.borderColor='var(--red)'; return; }
+        editId = null;
+        updateItem(id, { name:(nm===tf(cur.it.name,{}) ? null : nm), cat:catEl.value, cost:(blank && cur.it.varies ? null : c), freq:freqEl.value });
         if(typeof MRLN_SFX!=='undefined') MRLN_SFX.save();    // Budget: saved a price edit
         budFlashItem(id);                                     // lime flash on the edited row
       }
+    });
+    function openRowEditor(id){
+      editId = id; if(typeof MRLN_SFX!=='undefined') MRLN_SFX.tap(); renderManage();
+      var n = list.querySelector('[data-ename="'+id+'"]'); if(n) try{ n.focus({preventScroll:true}); }catch(_){ }
+    }
+    if(list) list.addEventListener('keydown', function(e){
+      if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.item-row[data-id]')){ e.preventDefault(); openRowEditor(e.target.getAttribute('data-id')); }
     });
     // Budget DISPLAY ⇄ EDIT toggle — flips one class on the panel (no re-render); the tools,
     // category-delete and add surfaces reveal via CSS. Leaving edit closes any open inline editor.
@@ -4757,9 +4863,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function renderManage(){
     var host = document.getElementById('customList'); if(!host) return;
     var sym = curInfo().sym;
-    var FQ={monthly:t('Monthly'),quarterly:t('Quarterly'),yearly:t('Yearly')};
+    var FQ={monthly:t('Monthly'),quarterly:t('Quarterly'),yearly:t('Yearly'),once:t('One-off')};
+    function onDate(s){ var p=String(s||'').split('-'); try{ return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(langLocale(),{day:'numeric',month:'short'}); }catch(_){ return s; } }
     function priceCell(it){
       if(it.varies) return '<span class="ir-varies">'+t('varies')+'</span>';
+      if(it.freq==='once') return '<span class="ir-amt">'+fmtN(Number(it.cost)||0)+' <small>'+sym+'</small></span><small>'+esc(t('one-off'))+' · '+esc(onDate(it.on))+'</small>';
       var m = itemMonthly(it);
       if(!isFinite(m)) return '<span class="ir-skel" aria-hidden="true"></span>';   // never print NaN
       var billed = (it.cost!=null && it.freq && it.freq!=='monthly') ? '<small>'+fmtN(it.cost)+' '+sym+'/'+(it.freq==='yearly'?'yr':'q')+'</small>' : '';
@@ -4773,17 +4881,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<button class="bud-catdel" data-delcat="'+esc(g.name)+'" title="'+esc(t('Delete category'))+'" aria-label="'+esc(t('Delete category'))+'">✕</button></div>';
       var rows = g.items.length ? g.items.map(function(it){
         if(it.id === editId){
-          var cur = it.cost!=null ? it.cost : (isFinite(itemMonthly(it))?Math.round(itemMonthly(it)):0);
-          return '<div class="item-row editing-row"><div class="ir-main"><div class="ir-name">'+esc(t(it.name))+'</div>'+
-            '<div class="ir-editfields"><input data-cost="'+it.id+'" type="number" min="0" step="1" inputmode="numeric" value="'+cur+'">'+
-            '<select data-freq="'+it.id+'">'+['monthly','quarterly','yearly'].map(function(f){ return '<option value="'+f+'"'+((it.freq||'monthly')===f?' selected':'')+'>'+FQ[f]+'</option>'; }).join('')+'</select></div></div>'+
+          var cur = it.varies ? '' : it.cost!=null ? it.cost : (isFinite(itemMonthly(it))?Math.round(itemMonthly(it)):0);
+          return '<div class="item-row editing-row"><div class="ir-main">'+
+            '<div class="ir-editfields ir-grid">'+
+            '<label>'+esc(t('Name'))+'<input data-ename="'+it.id+'" maxlength="60" value="'+esc(t(it.name))+'"></label>'+
+            '<label>'+esc(t('Category'))+'<select data-ecat="'+it.id+'">'+MODEL.groups.map(function(x){ return '<option value="'+esc(x.name)+'"'+(x===g?' selected':'')+'>'+esc(x.icon+' '+t(x.name))+'</option>'; }).join('')+'</select></label>'+
+            '<label>'+esc(t('Amount'))+' ('+esc(sym)+')<input data-cost="'+it.id+'" type="number" min="0" step="1" inputmode="numeric" value="'+cur+'"'+(it.varies?' placeholder="'+esc(t('varies'))+'"':'')+'></label>'+
+            '<label>'+esc(t('How often'))+'<select data-freq="'+it.id+'">'+['monthly','quarterly','yearly','once'].map(function(f){ return '<option value="'+f+'"'+((it.freq||'monthly')===f?' selected':'')+'>'+FQ[f]+'</option>'; }).join('')+'</select></label>'+
+            '</div></div>'+
             '<div class="ir-tools"><button class="btn" data-save="'+it.id+'" style="padding:6px 12px;font-size:13px">'+t('Save')+'</button>'+
-            '<button class="btn ghost" data-cancel="1" style="padding:6px 12px;font-size:13px">'+t('Cancel')+'</button></div></div>';
+            '<button class="btn ghost" data-cancel="1" style="padding:6px 12px;font-size:13px">'+t('Cancel')+'</button>'+
+            '<button class="ir-x" data-del="'+it.id+'" title="'+esc(t('Delete'))+'" aria-label="'+esc(t('Delete'))+'">✕</button></div></div>';
         }
         var badge = it.custom?' <span class="ir-added">'+t('ADDED')+'</span>':'';
         var until = (it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)))
           ? (todayKey()>String(it.until) ? '<small class="ir-until ok">✅ '+t('paid off')+'</small>' : '<small class="ir-until">🔁 '+t('until')+' '+esc(it.until)+'</small>') : '';
-        return '<div class="item-row"><div class="ir-main"><div class="ir-name">'+esc(t(it.name))+badge+'</div>'+until+'</div>'+
+        return '<div class="item-row" data-id="'+it.id+'" tabindex="0" role="button" aria-label="'+esc(tf('Change {name}',{name:t(it.name)}))+'"><div class="ir-main"><div class="ir-name">'+esc(t(it.name))+badge+'</div>'+until+'</div>'+
           '<div class="ir-price">'+priceCell(it)+'</div>'+
           '<div class="ir-tools">'+
             (it.varies?'':'<button class="ir-e" data-edit="'+it.id+'" title="'+esc(t('Edit'))+'" aria-label="'+esc(t('Edit'))+'">✎</button>')+
@@ -4804,13 +4917,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       /* N24 (Arthur r5): non-breaking spaces inside each unit so proper nouns never
          split ("San / Francisco"); the constant status rides in its own span, hidden
          below 860 (see .hdr-status). textContent only — no markup surface. */
-      var bits = [p.name||t('Operator'), p.location].filter(function(x){ return x; })
+      var bits = [p.name, p.location].filter(function(x){ return x; })
         .map(function(x){ return String(x).replace(/ /g,' '); });
       s.textContent = bits.join(' · ');
-      var st = document.createElement('span'); st.className = 'hdr-status';
-      st.textContent = ' · ' + t('Status: ACTIVE').replace(/ /g, ' ');
-      s.appendChild(st);
+      s.style.display = bits.length ? '' : 'none';
     }
+    // empty pills are noise for a new user — show them once there is something to say
+    var ap = document.getElementById('hdrAgePill'); if(ap) ap.style.display = p.age ? '' : 'none';
+    var wp = document.getElementById('hdrWorkPill'); if(wp) wp.style.display = p.employer ? '' : 'none';
   }
   function setProfile(field, value){
     if(!MODEL.profile) MODEL.profile = {};
@@ -6750,7 +6864,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // Fixed answers about the product itself; checked before the numbers matcher ("cost" would read as spending).
   var _FIXED_QA = [
     [/\b(delete (?:all )?(?:of )?(?:my )?(?:data|everything|account)|erase (?:all )?(?:my )?(?:data|everything)|wipe (?:my |all )?(?:data|everything)|remove (?:all )?my data|reset (?:everything|the app|all)|slet (?:alle )?mine data)\b/,
-      'Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.'],
+      'Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.'],
     [/\b(where (?:is|are|do you keep|do you store|does mrln (?:keep|store)) (?:all )?(?:my |the )?(?:data|info|information|numbers)|where (?:is|are) (?:it|they|my \w+) (?:stored|saved|kept)|(?:my )?data (?:is |gets )?(?:stored|kept)|(?:is|are) (?:my data|it|they) (?:on|in) (?:a |the )?(?:server|cloud)|hvor (?:er|gemmes) mine data)\b/,
       'Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.'],
     [/\b(price|pricing|how much (?:does|is|do) (?:mrln|the app|this app|this|it|a key|an access key|the key|a subscription)(?: cost)?|what does (?:mrln|the app|it) cost|(?:mrln|app|key|subscription) (?:cost|price)s?|buy a key|get a key|refund|money.?back|hvad koster)\b/,
@@ -6863,11 +6977,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var blob = new Blob([html], { type:'text/html' });
     var url = URL.createObjectURL(blob);
     var d = new Date();
-    var fname = 'finance-hud-' + d.getFullYear() + pad2(d.getMonth()+1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + '.html';
+    var fname = 'MRLN-backup-' + d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()) + '.html';
     var a = document.createElement('a'); a.href = url; a.download = fname;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ exported ' + fname; b.style.color = 'var(--lime)'; }
+    var b = document.getElementById('saveBadge'); if(b){ b.textContent = t('✓ Backup downloaded') + ' · ' + fname; b.style.color = 'var(--lime)'; }
     try{ STATE.lastBackup = Date.now(); if(typeof autosave==='function') autosave(); }catch(_){}   // remember they saved a copy → quiets the backup reminder
   }
   // Export a GUARANTEED-CLEAN copy to give to a new person: no data, no key.
@@ -6921,7 +7035,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(lockEl && wasU) lockEl.classList.add('unlocked');
       var blob = new Blob([html], { type:'text/html' });
       var url = URL.createObjectURL(blob);
-      var a = document.createElement('a'); a.href = url; a.download = 'finance-hud-' + (fid || 'START') + '.html';
+      var a = document.createElement('a'); a.href = url; a.download = 'MRLN-' + (fid || 'START') + '.html';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
       var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ customer file downloaded' + (fid?(' · '+fid):''); b.style.color = 'var(--cyan)'; }
@@ -6935,11 +7049,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   (function initSave(){
     // try-mode (a fresh share template) starts EXPANDED: those users must see Save
     // immediately or their first session's data dies with the tab (council ruling).
-    if(typeof TEMPLATE_MODE!=='undefined' && TEMPLATE_MODE){ var _tb=document.querySelector('.savebar'); if(_tb) _tb.classList.add('open'); }
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
     var lkb = document.getElementById('lockBtn');
     if(lkb) lkb.addEventListener('click', function(){
-      uiConfirm({ title:'🔒 Lock the dashboard?', message:'You’ll need your access key to get back in.', confirmText:'Lock', danger:false }, function(){
+      uiConfirm({ title:t('🔒 Lock MRLN?'), message:t('You’ll need your access key to open it again.'), confirmText:t('Lock'), danger:false }, function(){
         try{ LOCK.logout(); }catch(_){ }
       });
     });
@@ -6961,8 +7074,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
     var b = document.getElementById('saveBadge');
     if(b){
-      if(STATE.savedAt){ try{ b.textContent = 'last saved ' + new Date(STATE.savedAt).toLocaleString('en-GB'); }catch(_){ b.textContent='loaded'; } }
-      else b.textContent = 'new file — nothing saved yet';
+      b.textContent = STATE.savedAt ? t('Saved on this device ✓') : t('Nothing saved yet');
+      b.style.color = STATE.savedAt ? 'var(--lime)' : '';
     }
   })();
 
@@ -7087,10 +7200,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(!raw){ setStatus('No saved data on this device to export.','var(--amber)'); return; }
       try{
         var d=new Date(), p=function(n){ return (n<10?'0':'')+n; };
-        var stamp=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
+        var stamp=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
         var blob=new Blob([raw],{type:'application/json'});
         var url=URL.createObjectURL(blob);
-        var a=document.createElement('a'); a.href=url; a.download='mrln-data-'+stamp+'.json';
+        var a=document.createElement('a'); a.href=url; a.download='MRLN-backup-'+stamp+'.json';
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(function(){ URL.revokeObjectURL(url); },1500);
         setStatus('✓ Exported your data. Keep this file safe — it is yours.','var(--lime)');
@@ -7290,15 +7403,26 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   /* <<< AUTO-MERGED FULL UI TRANSLATIONS <<< *//* <<< AUTO-MERGED FULL UI TRANSLATIONS <<< *//* <<< AUTO-MERGED FULL UI TRANSLATIONS <<< */
   // Lock screen, data deletion and assistant strings
   (function(extra){ Object.keys(extra).forEach(function(L){ I18N[L]=I18N[L]||{}; for(var k in extra[L]){ if(I18N[L][k]==null) I18N[L][k]=extra[L][k]; } }); })({
-   "es":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN es una app privada para tu dinero, tu salud, tus planes y tus notas. Vive solo en este dispositivo: sin cuenta y sin nube.", "Get a key — $69/year": "Consigue una clave — $69/año", "Prefer monthly? $9.99/month →": "¿Prefieres pagar al mes? $9.99/mes →", "🗑 Delete all my data": "🗑 Borrar todos mis datos", "Erase everything MRLN stored on this device": "Borra todo lo que MRLN guardó en este dispositivo", "🗑 Delete all my data?": "🗑 ¿Borrar todos tus datos?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Esto borra <b>todo lo que MRLN guarda en este dispositivo</b> — ingresos, gastos, perfil, calendario, notas, registros y fotos de comida — y reinicia la configuración. Tu clave de acceso se mantiene. Exporta una copia antes si quizá la quieras recuperar.", "Continue": "Continuar", "⚠️ Last check": "⚠️ Última comprobación", "This cannot be undone. Delete all your data on this device now?": "No se puede deshacer. ¿Borrar ahora todos tus datos de este dispositivo?", "Delete everything": "Borrar todo", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Tus datos se guardan solo en este navegador, en este dispositivo. No hay servidor de MRLN ni cuenta, así que no se sube nada. Si borras los datos del sitio en este navegador, se borran, así que exporta una copia de vez en cuando.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Abre ⚙ Ajustes → Datos → “🗑 Borrar todos mis datos”. Confirmas dos veces y se borra todo lo que MRLN guarda en este dispositivo, fotos de comida incluidas. Tu clave de acceso se mantiene. Exporta una copia antes si quizá la quieras recuperar.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN cuesta $9.99/mes o $69/año (ahorras un 42%, menos de $6/mes). Incluye todas las funciones, no tiene anuncios y tiene garantía de devolución de 30 días. Consigue una clave en mrln.online."},
-   "da":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN er én privat app til dine penge, din sundhed, dine planer og noter. Den ligger kun på denne enhed — ingen konto, ingen sky.", "Get a key — $69/year": "Få en nøgle — $69/år", "Prefer monthly? $9.99/month →": "Hellere månedligt? $9.99/måned →", "🗑 Delete all my data": "🗑 Slet alle mine data", "Erase everything MRLN stored on this device": "Slet alt, hvad MRLN har gemt på denne enhed", "🗑 Delete all my data?": "🗑 Slet alle dine data?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Det sletter <b>alt, hvad MRLN gemmer på denne enhed</b> — indkomst, udgifter, profil, kalender, noter, logs og madbilleder — og starter opsætningen forfra. Din adgangsnøgle bliver. Eksportér en backup først, hvis du måske vil have det tilbage.", "Continue": "Fortsæt", "⚠️ Last check": "⚠️ Sidste tjek", "This cannot be undone. Delete all your data on this device now?": "Det kan ikke fortrydes. Vil du slette alle dine data på denne enhed nu?", "Delete everything": "Slet alt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Dine data gemmes kun i denne browser på denne enhed. Der er ingen MRLN-server og ingen konto, så intet bliver uploadet. Rydder du browserens webstedsdata, forsvinder de, så eksportér en backup en gang imellem.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Åbn ⚙ Indstil → Data → “🗑 Slet alle mine data”. Du bekræfter to gange, og så slettes alt, hvad MRLN gemmer på denne enhed, også madbilleder. Din adgangsnøgle bliver. Eksportér en backup først, hvis du måske vil have det tilbage.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN koster $9.99/måned eller $69/år (spar 42%, under $6/måned). Alle funktioner er med, der er ingen reklamer, og du får 30 dages pengene-tilbage-garanti. Få en nøgle på mrln.online."},
-   "de":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN ist eine private App für dein Geld, deine Gesundheit, deine Pläne und Notizen. Sie liegt nur auf diesem Gerät — kein Konto, keine Cloud.", "Get a key — $69/year": "Schlüssel holen — $69/Jahr", "Prefer monthly? $9.99/month →": "Lieber monatlich? $9.99/Monat →", "🗑 Delete all my data": "🗑 Alle meine Daten löschen", "Erase everything MRLN stored on this device": "Löscht alles, was MRLN auf diesem Gerät gespeichert hat", "🗑 Delete all my data?": "🗑 Alle deine Daten löschen?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Damit wird <b>alles gelöscht, was MRLN auf diesem Gerät speichert</b> — Einkommen, Ausgaben, Profil, Kalender, Notizen, Protokolle und Essensfotos — und die Einrichtung startet neu. Dein Zugangsschlüssel bleibt. Exportiere vorher ein Backup, falls du es zurückhaben willst.", "Continue": "Weiter", "⚠️ Last check": "⚠️ Letzte Kontrolle", "This cannot be undone. Delete all your data on this device now?": "Das lässt sich nicht rückgängig machen. Jetzt alle deine Daten auf diesem Gerät löschen?", "Delete everything": "Alles löschen", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Deine Daten werden nur in diesem Browser auf diesem Gerät gespeichert. Es gibt keinen MRLN-Server und kein Konto, also wird nichts hochgeladen. Wenn du die Websitedaten dieses Browsers löschst, sind sie weg — exportiere also ab und zu ein Backup.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Öffne ⚙ Optionen → Daten → „🗑 Alle meine Daten löschen“. Du bestätigst zweimal, dann wird alles gelöscht, was MRLN auf diesem Gerät speichert, auch Essensfotos. Dein Zugangsschlüssel bleibt. Exportiere vorher ein Backup, falls du es zurückhaben willst.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN kostet $9.99/Monat oder $69/Jahr (42% gespart, unter $6/Monat). Alle Funktionen sind dabei, es gibt keine Werbung und eine 30-Tage-Geld-zurück-Garantie. Hol dir einen Schlüssel auf mrln.online."},
-   "sv":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN är en privat app för din ekonomi, hälsa, planer och anteckningar. Den finns bara på den här enheten — inget konto, inget moln.", "Get a key — $69/year": "Skaffa en nyckel — $69/år", "Prefer monthly? $9.99/month →": "Hellre månadsvis? $9.99/månad →", "🗑 Delete all my data": "🗑 Radera all min data", "Erase everything MRLN stored on this device": "Raderar allt som MRLN har sparat på den här enheten", "🗑 Delete all my data?": "🗑 Radera all din data?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Det raderar <b>allt som MRLN sparar på den här enheten</b> — inkomst, utgifter, profil, kalender, anteckningar, loggar och matbilder — och startar om inställningen. Din åtkomstnyckel finns kvar. Exportera en säkerhetskopia först om du kanske vill ha tillbaka det.", "Continue": "Fortsätt", "⚠️ Last check": "⚠️ Sista kontrollen", "This cannot be undone. Delete all your data on this device now?": "Det går inte att ångra. Radera all din data på den här enheten nu?", "Delete everything": "Radera allt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Din data sparas bara i den här webbläsaren på den här enheten. Det finns ingen MRLN-server och inget konto, så inget laddas upp. Rensar du webbläsarens webbplatsdata försvinner den, så exportera en säkerhetskopia då och då.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Öppna ⚙ Inställ → Data → ”🗑 Radera all min data”. Du bekräftar två gånger, sedan raderas allt som MRLN sparar på den här enheten, matbilder inräknade. Din åtkomstnyckel finns kvar. Exportera en säkerhetskopia först om du kanske vill ha tillbaka det.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN kostar $9.99/månad eller $69/år (spara 42%, under $6/månad). Alla funktioner ingår, det finns inga annonser och du får 30 dagars pengarna-tillbaka-garanti. Skaffa en nyckel på mrln.online."},
-   "nb":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN er én privat app for pengene, helsen, planene og notatene dine. Den ligger bare på denne enheten — ingen konto, ingen sky.", "Get a key — $69/year": "Få en nøkkel — $69/år", "Prefer monthly? $9.99/month →": "Heller månedlig? $9.99/måned →", "🗑 Delete all my data": "🗑 Slett alle dataene mine", "Erase everything MRLN stored on this device": "Sletter alt MRLN har lagret på denne enheten", "🗑 Delete all my data?": "🗑 Slette alle dataene dine?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Dette sletter <b>alt MRLN lagrer på denne enheten</b> — inntekt, utgifter, profil, kalender, notater, logger og matbilder — og starter oppsettet på nytt. Tilgangsnøkkelen din blir værende. Eksporter en sikkerhetskopi først hvis du kanskje vil ha det tilbake.", "Continue": "Fortsett", "⚠️ Last check": "⚠️ Siste sjekk", "This cannot be undone. Delete all your data on this device now?": "Dette kan ikke angres. Slette alle dataene dine på denne enheten nå?", "Delete everything": "Slett alt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Dataene dine lagres bare i denne nettleseren på denne enheten. Det finnes ingen MRLN-server og ingen konto, så ingenting lastes opp. Sletter du nettstedsdataene i nettleseren, forsvinner de, så eksporter en sikkerhetskopi innimellom.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Åpne ⚙ Innstil → Data → «🗑 Slett alle dataene mine». Du bekrefter to ganger, så slettes alt MRLN lagrer på denne enheten, også matbilder. Tilgangsnøkkelen din blir værende. Eksporter en sikkerhetskopi først hvis du kanskje vil ha det tilbake.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN koster $9.99/måned eller $69/år (spar 42%, under $6/måned). Alle funksjoner er med, det er ingen reklame, og du får 30 dagers pengene-tilbake-garanti. Få en nøkkel på mrln.online."},
-   "hu":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "Az MRLN egyetlen privát app a pénzedhez, az egészségedhez, a terveidhez és a jegyzeteidhez. Csak ezen az eszközön él — nincs fiók, nincs felhő.", "Get a key — $69/year": "Kulcs vásárlása — $69/év", "Prefer monthly? $9.99/month →": "Inkább havonta? $9.99/hó →", "🗑 Delete all my data": "🗑 Összes adatom törlése", "Erase everything MRLN stored on this device": "Mindent töröl, amit az MRLN ezen az eszközön tárolt", "🗑 Delete all my data?": "🗑 Törlöd az összes adatodat?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Ez <b>mindent töröl, amit az MRLN ezen az eszközön tárol</b> — bevételt, kiadásokat, profilt, naptárt, jegyzeteket, naplókat és ételfotókat — és újraindítja a beállítást. A hozzáférési kulcsod megmarad. Előbb exportálj biztonsági mentést, ha esetleg vissza szeretnéd kapni.", "Continue": "Tovább", "⚠️ Last check": "⚠️ Utolsó ellenőrzés", "This cannot be undone. Delete all your data on this device now?": "Ez nem vonható vissza. Most törlöd az összes adatodat erről az eszközről?", "Delete everything": "Minden törlése", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Az adataid csak ebben a böngészőben, ezen az eszközön tárolódnak. Nincs MRLN-szerver és nincs fiók, így semmi sem töltődik fel. Ha törlöd a böngésző webhelyadatait, az adataid is törlődnek, ezért időnként exportálj biztonsági mentést.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Nyisd meg: ⚙ Beállítás → Adatok → „🗑 Összes adatom törlése”. Kétszer megerősíted, és minden törlődik, amit az MRLN ezen az eszközön tárol, az ételfotókkal együtt. A hozzáférési kulcsod megmarad. Előbb exportálj biztonsági mentést, ha esetleg vissza szeretnéd kapni.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "Az MRLN ára $9.99/hó vagy $69/év (42% megtakarítás, havi $6 alatt). Minden funkciót tartalmaz, nincs benne hirdetés, és 30 napos pénzvisszafizetési garancia jár hozzá. Kulcsot a mrln.online oldalon vehetsz."},
-   "fr":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN est une app privée pour votre argent, votre santé, vos projets et vos notes. Elle reste uniquement sur cet appareil — pas de compte, pas de cloud.", "Get a key — $69/year": "Obtenir une clé — $69/an", "Prefer monthly? $9.99/month →": "Plutôt au mois ? $9.99/mois →", "🗑 Delete all my data": "🗑 Supprimer toutes mes données", "Erase everything MRLN stored on this device": "Efface tout ce que MRLN a enregistré sur cet appareil", "🗑 Delete all my data?": "🗑 Supprimer toutes vos données ?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Cela efface <b>tout ce que MRLN conserve sur cet appareil</b> — revenus, dépenses, profil, calendrier, notes, journaux et photos de repas — et relance la configuration. Votre clé d'accès est conservée. Exportez d'abord une sauvegarde si vous risquez d'en avoir besoin.", "Continue": "Continuer", "⚠️ Last check": "⚠️ Dernière vérification", "This cannot be undone. Delete all your data on this device now?": "Cette action est irréversible. Supprimer maintenant toutes vos données de cet appareil ?", "Delete everything": "Tout supprimer", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Vos données sont stockées uniquement dans ce navigateur, sur cet appareil. Il n'y a ni serveur MRLN ni compte, donc rien n'est envoyé en ligne. Effacer les données du site dans ce navigateur les supprime : exportez donc une sauvegarde de temps en temps.", "Open ⚙ Settings → Data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Ouvrez ⚙ Réglages → Données → « 🗑 Supprimer toutes mes données ». Vous confirmez deux fois, puis tout ce que MRLN conserve sur cet appareil est effacé, photos de repas comprises. Votre clé d'accès est conservée. Exportez d'abord une sauvegarde si vous risquez d'en avoir besoin.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN coûte $9.99/mois ou $69/an (42 % d'économie, moins de $6/mois). Toutes les fonctionnalités sont incluses, sans publicité, avec une garantie satisfait ou remboursé de 30 jours. Obtenez une clé sur mrln.online."}
+   "es":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN es una app privada para tu dinero, tu salud, tus planes y tus notas. Vive solo en este dispositivo: sin cuenta y sin nube.", "Get a key — $69/year": "Consigue una clave — $69/año", "Prefer monthly? $9.99/month →": "¿Prefieres pagar al mes? $9.99/mes →", "🗑 Delete all my data": "🗑 Borrar todos mis datos", "Erase everything MRLN stored on this device": "Borra todo lo que MRLN guardó en este dispositivo", "🗑 Delete all my data?": "🗑 ¿Borrar todos tus datos?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Esto borra <b>todo lo que MRLN guarda en este dispositivo</b> — ingresos, gastos, perfil, calendario, notas, registros y fotos de comida — y reinicia la configuración. Tu clave de acceso se mantiene. Exporta una copia antes si quizá la quieras recuperar.", "Continue": "Continuar", "⚠️ Last check": "⚠️ Última comprobación", "This cannot be undone. Delete all your data on this device now?": "No se puede deshacer. ¿Borrar ahora todos tus datos de este dispositivo?", "Delete everything": "Borrar todo", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Tus datos se guardan solo en este navegador, en este dispositivo. No hay servidor de MRLN ni cuenta, así que no se sube nada. Si borras los datos del sitio en este navegador, se borran, así que exporta una copia de vez en cuando.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Abre ⚙ Ajustes → Tus datos → “🗑 Borrar todos mis datos”. Confirmas dos veces y se borra todo lo que MRLN guarda en este dispositivo, fotos de comida incluidas. Tu clave de acceso se mantiene. Exporta una copia antes si quizá la quieras recuperar.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN cuesta $9.99/mes o $69/año (ahorras un 42%, menos de $6/mes). Incluye todas las funciones, no tiene anuncios y tiene garantía de devolución de 30 días. Consigue una clave en mrln.online."},
+   "da":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN er én privat app til dine penge, din sundhed, dine planer og noter. Den ligger kun på denne enhed — ingen konto, ingen sky.", "Get a key — $69/year": "Få en nøgle — $69/år", "Prefer monthly? $9.99/month →": "Hellere månedligt? $9.99/måned →", "🗑 Delete all my data": "🗑 Slet alle mine data", "Erase everything MRLN stored on this device": "Slet alt, hvad MRLN har gemt på denne enhed", "🗑 Delete all my data?": "🗑 Slet alle dine data?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Det sletter <b>alt, hvad MRLN gemmer på denne enhed</b> — indkomst, udgifter, profil, kalender, noter, logs og madbilleder — og starter opsætningen forfra. Din adgangsnøgle bliver. Eksportér en backup først, hvis du måske vil have det tilbage.", "Continue": "Fortsæt", "⚠️ Last check": "⚠️ Sidste tjek", "This cannot be undone. Delete all your data on this device now?": "Det kan ikke fortrydes. Vil du slette alle dine data på denne enhed nu?", "Delete everything": "Slet alt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Dine data gemmes kun i denne browser på denne enhed. Der er ingen MRLN-server og ingen konto, så intet bliver uploadet. Rydder du browserens webstedsdata, forsvinder de, så eksportér en backup en gang imellem.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Åbn ⚙ Indstillinger → Dine data → “🗑 Slet alle mine data”. Du bekræfter to gange, og så slettes alt, hvad MRLN gemmer på denne enhed, også madbilleder. Din adgangsnøgle bliver. Eksportér en backup først, hvis du måske vil have det tilbage.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN koster $9.99/måned eller $69/år (spar 42%, under $6/måned). Alle funktioner er med, der er ingen reklamer, og du får 30 dages pengene-tilbage-garanti. Få en nøgle på mrln.online."},
+   "de":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN ist eine private App für dein Geld, deine Gesundheit, deine Pläne und Notizen. Sie liegt nur auf diesem Gerät — kein Konto, keine Cloud.", "Get a key — $69/year": "Schlüssel holen — $69/Jahr", "Prefer monthly? $9.99/month →": "Lieber monatlich? $9.99/Monat →", "🗑 Delete all my data": "🗑 Alle meine Daten löschen", "Erase everything MRLN stored on this device": "Löscht alles, was MRLN auf diesem Gerät gespeichert hat", "🗑 Delete all my data?": "🗑 Alle deine Daten löschen?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Damit wird <b>alles gelöscht, was MRLN auf diesem Gerät speichert</b> — Einkommen, Ausgaben, Profil, Kalender, Notizen, Protokolle und Essensfotos — und die Einrichtung startet neu. Dein Zugangsschlüssel bleibt. Exportiere vorher ein Backup, falls du es zurückhaben willst.", "Continue": "Weiter", "⚠️ Last check": "⚠️ Letzte Kontrolle", "This cannot be undone. Delete all your data on this device now?": "Das lässt sich nicht rückgängig machen. Jetzt alle deine Daten auf diesem Gerät löschen?", "Delete everything": "Alles löschen", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Deine Daten werden nur in diesem Browser auf diesem Gerät gespeichert. Es gibt keinen MRLN-Server und kein Konto, also wird nichts hochgeladen. Wenn du die Websitedaten dieses Browsers löschst, sind sie weg — exportiere also ab und zu ein Backup.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Öffne ⚙ Einstellungen → Deine Daten → „🗑 Alle meine Daten löschen“. Du bestätigst zweimal, dann wird alles gelöscht, was MRLN auf diesem Gerät speichert, auch Essensfotos. Dein Zugangsschlüssel bleibt. Exportiere vorher ein Backup, falls du es zurückhaben willst.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN kostet $9.99/Monat oder $69/Jahr (42% gespart, unter $6/Monat). Alle Funktionen sind dabei, es gibt keine Werbung und eine 30-Tage-Geld-zurück-Garantie. Hol dir einen Schlüssel auf mrln.online."},
+   "sv":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN är en privat app för din ekonomi, hälsa, planer och anteckningar. Den finns bara på den här enheten — inget konto, inget moln.", "Get a key — $69/year": "Skaffa en nyckel — $69/år", "Prefer monthly? $9.99/month →": "Hellre månadsvis? $9.99/månad →", "🗑 Delete all my data": "🗑 Radera all min data", "Erase everything MRLN stored on this device": "Raderar allt som MRLN har sparat på den här enheten", "🗑 Delete all my data?": "🗑 Radera all din data?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Det raderar <b>allt som MRLN sparar på den här enheten</b> — inkomst, utgifter, profil, kalender, anteckningar, loggar och matbilder — och startar om inställningen. Din åtkomstnyckel finns kvar. Exportera en säkerhetskopia först om du kanske vill ha tillbaka det.", "Continue": "Fortsätt", "⚠️ Last check": "⚠️ Sista kontrollen", "This cannot be undone. Delete all your data on this device now?": "Det går inte att ångra. Radera all din data på den här enheten nu?", "Delete everything": "Radera allt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Din data sparas bara i den här webbläsaren på den här enheten. Det finns ingen MRLN-server och inget konto, så inget laddas upp. Rensar du webbläsarens webbplatsdata försvinner den, så exportera en säkerhetskopia då och då.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Öppna ⚙ Inställningar → Din data → ”🗑 Radera all min data”. Du bekräftar två gånger, sedan raderas allt som MRLN sparar på den här enheten, matbilder inräknade. Din åtkomstnyckel finns kvar. Exportera en säkerhetskopia först om du kanske vill ha tillbaka det.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN kostar $9.99/månad eller $69/år (spara 42%, under $6/månad). Alla funktioner ingår, det finns inga annonser och du får 30 dagars pengarna-tillbaka-garanti. Skaffa en nyckel på mrln.online."},
+   "nb":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN er én privat app for pengene, helsen, planene og notatene dine. Den ligger bare på denne enheten — ingen konto, ingen sky.", "Get a key — $69/year": "Få en nøkkel — $69/år", "Prefer monthly? $9.99/month →": "Heller månedlig? $9.99/måned →", "🗑 Delete all my data": "🗑 Slett alle dataene mine", "Erase everything MRLN stored on this device": "Sletter alt MRLN har lagret på denne enheten", "🗑 Delete all my data?": "🗑 Slette alle dataene dine?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Dette sletter <b>alt MRLN lagrer på denne enheten</b> — inntekt, utgifter, profil, kalender, notater, logger og matbilder — og starter oppsettet på nytt. Tilgangsnøkkelen din blir værende. Eksporter en sikkerhetskopi først hvis du kanskje vil ha det tilbake.", "Continue": "Fortsett", "⚠️ Last check": "⚠️ Siste sjekk", "This cannot be undone. Delete all your data on this device now?": "Dette kan ikke angres. Slette alle dataene dine på denne enheten nå?", "Delete everything": "Slett alt", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Dataene dine lagres bare i denne nettleseren på denne enheten. Det finnes ingen MRLN-server og ingen konto, så ingenting lastes opp. Sletter du nettstedsdataene i nettleseren, forsvinner de, så eksporter en sikkerhetskopi innimellom.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Åpne ⚙ Innstillinger → Dataene dine → «🗑 Slett alle dataene mine». Du bekrefter to ganger, så slettes alt MRLN lagrer på denne enheten, også matbilder. Tilgangsnøkkelen din blir værende. Eksporter en sikkerhetskopi først hvis du kanskje vil ha det tilbake.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN koster $9.99/måned eller $69/år (spar 42%, under $6/måned). Alle funksjoner er med, det er ingen reklame, og du får 30 dagers pengene-tilbake-garanti. Få en nøkkel på mrln.online."},
+   "hu":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "Az MRLN egyetlen privát app a pénzedhez, az egészségedhez, a terveidhez és a jegyzeteidhez. Csak ezen az eszközön él — nincs fiók, nincs felhő.", "Get a key — $69/year": "Kulcs vásárlása — $69/év", "Prefer monthly? $9.99/month →": "Inkább havonta? $9.99/hó →", "🗑 Delete all my data": "🗑 Összes adatom törlése", "Erase everything MRLN stored on this device": "Mindent töröl, amit az MRLN ezen az eszközön tárolt", "🗑 Delete all my data?": "🗑 Törlöd az összes adatodat?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Ez <b>mindent töröl, amit az MRLN ezen az eszközön tárol</b> — bevételt, kiadásokat, profilt, naptárt, jegyzeteket, naplókat és ételfotókat — és újraindítja a beállítást. A hozzáférési kulcsod megmarad. Előbb exportálj biztonsági mentést, ha esetleg vissza szeretnéd kapni.", "Continue": "Tovább", "⚠️ Last check": "⚠️ Utolsó ellenőrzés", "This cannot be undone. Delete all your data on this device now?": "Ez nem vonható vissza. Most törlöd az összes adatodat erről az eszközről?", "Delete everything": "Minden törlése", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Az adataid csak ebben a böngészőben, ezen az eszközön tárolódnak. Nincs MRLN-szerver és nincs fiók, így semmi sem töltődik fel. Ha törlöd a böngésző webhelyadatait, az adataid is törlődnek, ezért időnként exportálj biztonsági mentést.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Nyisd meg: ⚙ Beállítások → Az adataid → „🗑 Összes adatom törlése”. Kétszer megerősíted, és minden törlődik, amit az MRLN ezen az eszközön tárol, az ételfotókkal együtt. A hozzáférési kulcsod megmarad. Előbb exportálj biztonsági mentést, ha esetleg vissza szeretnéd kapni.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "Az MRLN ára $9.99/hó vagy $69/év (42% megtakarítás, havi $6 alatt). Minden funkciót tartalmaz, nincs benne hirdetés, és 30 napos pénzvisszafizetési garancia jár hozzá. Kulcsot a mrln.online oldalon vehetsz."},
+   "fr":{"MRLN is one private app for your money, health, plans and notes. It lives only on this device — no account, no cloud.": "MRLN est une app privée pour votre argent, votre santé, vos projets et vos notes. Elle reste uniquement sur cet appareil — pas de compte, pas de cloud.", "Get a key — $69/year": "Obtenir une clé — $69/an", "Prefer monthly? $9.99/month →": "Plutôt au mois ? $9.99/mois →", "🗑 Delete all my data": "🗑 Supprimer toutes mes données", "Erase everything MRLN stored on this device": "Efface tout ce que MRLN a enregistré sur cet appareil", "🗑 Delete all my data?": "🗑 Supprimer toutes vos données ?", "This erases <b>everything MRLN keeps on this device</b> — income, expenses, profile, calendar, notes, logs and food photos — and restarts setup. Your access key stays. Export a backup first if you might want it back.": "Cela efface <b>tout ce que MRLN conserve sur cet appareil</b> — revenus, dépenses, profil, calendrier, notes, journaux et photos de repas — et relance la configuration. Votre clé d'accès est conservée. Exportez d'abord une sauvegarde si vous risquez d'en avoir besoin.", "Continue": "Continuer", "⚠️ Last check": "⚠️ Dernière vérification", "This cannot be undone. Delete all your data on this device now?": "Cette action est irréversible. Supprimer maintenant toutes vos données de cet appareil ?", "Delete everything": "Tout supprimer", "Your data is stored only in this browser on this device. There is no MRLN server and no account, so nothing is uploaded. Clearing this browser’s site data erases it, so export a backup now and then.": "Vos données sont stockées uniquement dans ce navigateur, sur cet appareil. Il n'y a ni serveur MRLN ni compte, donc rien n'est envoyé en ligne. Effacer les données du site dans ce navigateur les supprime : exportez donc une sauvegarde de temps en temps.", "Open ⚙ Settings → Your data → “🗑 Delete all my data”. You confirm twice, then everything MRLN keeps on this device is erased, food photos included. Your access key stays. Export a backup first if you might want it back.": "Ouvrez ⚙ Réglages → Vos données → « 🗑 Supprimer toutes mes données ». Vous confirmez deux fois, puis tout ce que MRLN conserve sur cet appareil est effacé, photos de repas comprises. Votre clé d'accès est conservée. Exportez d'abord une sauvegarde si vous risquez d'en avoir besoin.", "MRLN costs $9.99/month, or $69/year (save 42%, under $6/month). Every feature is included, there are no ads, and you get a 30-day money-back guarantee. Get a key at mrln.online.": "MRLN coûte $9.99/mois ou $69/an (42 % d'économie, moins de $6/mois). Toutes les fonctionnalités sont incluses, sans publicité, avec une garantie satisfait ou remboursé de 30 jours. Obtenez une clé sur mrln.online."}
   });
   /* end lock/data/assistant strings */
+  // Plain-words, budget, data and navigation strings
+  (function(extra){ Object.keys(extra).forEach(function(L){ I18N[L]=I18N[L]||{}; for(var k in extra[L]) I18N[L][k]=extra[L][k]; }); })({
+   "es":{"Money & health tracker": "Control de dinero y salud", "Overall grade": "Nota global", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Tu nota global de S (la mejor) a E, calculada con tus cifras de dinero y salud. Mira Estadísticas y notas para saber por qué.", "Move data": "Mover datos", "Your plan": "Tu plan", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Todo tu plan en una pantalla, hecho con tus propios ingresos, facturas y suscripciones. Todas las páginas usan las mismas cifras.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Elige una hora y sonará un aviso para recordártelo, cada día, mientras MRLN esté abierto.", "Time in MRLN ⏱": "Tiempo en MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Cada cambio que has hecho: añadido, editado, borrado, copia de seguridad. Se guarda con tus datos y va incluido en cada copia.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · funciona sin conexión · guardado en este dispositivo · no es asesoramiento financiero ni médico ·", "🔒 Lock MRLN": "🔒 Bloquear MRLN", "🔒 Lock MRLN?": "🔒 ¿Bloquear MRLN?", "Lock MRLN — you'll need your access key to open it again": "Bloquear MRLN: necesitarás tu clave de acceso para volver a abrirlo", "You’ll need your access key to open it again.": "Necesitarás tu clave de acceso para volver a abrirlo.", "Lock": "Bloquear", "Classic": "Clásico", "✓ Backup downloaded": "✓ Copia descargada", "Settings": "Ajustes", "Streak": "Racha", "Days in a row you've used MRLN": "Días seguidos que has usado MRLN", "+ Add cost": "+ Añadir gasto", "One-off (this month)": "Puntual (este mes)", "One-off": "Puntual", "one-off": "puntual", "Close": "Cerrar", "Amount": "Importe", "How often": "Frecuencia", "Change {name}": "Cambiar {name}", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Toca un gasto para cambiarlo o borrarlo. Toca Editar para añadir o quitar categorías.", "Your data": "Tus datos", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Tus datos se guardan en este navegador, en este dispositivo. No se sube nada. Descarga una copia de seguridad de vez en cuando para tener un respaldo.", "⬇ Back up (download)": "⬇ Copia de seguridad (descargar)", "Download a backup file with all your data": "Descarga un archivo con todos tus datos", "⬆ Restore from a backup": "⬆ Restaurar una copia", "⬆ Restore this backup?": "⬆ ¿Restaurar esta copia?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Esto sustituye todo lo que hay en este dispositivo por la copia: ingresos, gastos, notas, calendario y registro de comidas. Tu clave de acceso se mantiene.", "Restore": "Restaurar", "✓ Backup restored": "✓ Copia restaurada", "⇄ Move to another device": "⇄ Pasar a otro dispositivo", "Copy your data to your other phone or browser": "Copia tus datos a tu otro móvil o navegador", "📲 Install or copy link": "📲 Instalar o copiar enlace", "Install MRLN on this device, or copy your link": "Instala MRLN en este dispositivo o copia tu enlace", "Include my access key in backups": "Incluir mi clave de acceso en las copias", "Backups then open without typing your key. Turn off if you'll share the file.": "Así las copias se abren sin escribir la clave. Desactívalo si vas a compartir el archivo.", "Saved on this device ✓": "Guardado en este dispositivo ✓", "Nothing saved yet": "Aún no se ha guardado nada", "● Try mode — download a backup to keep your data": "● Modo prueba: descarga una copia para conservar tus datos", "● Not saving here — open MRLN in your browser": "● Aquí no se guarda: abre MRLN en tu navegador", "● Storage is full — download a backup to free space": "● Almacenamiento lleno: descarga una copia para liberar espacio", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Tus datos.</b> Se guardan en este dispositivo. Aquí puedes hacer una copia, restaurar, pasar a otro dispositivo o borrarlo todo.", "🧾 Change log": "🧾 Historial de cambios", "Your monthly take-home pay (after tax). Change it any time below.": "Lo que cobras al mes (después de impuestos). Cámbialo cuando quieras aquí abajo.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Cambia las cifras aquí o díselo a Asistente MRLN con tus palabras, por ejemplo “gano 18000 al mes”.", "✎ Change income": "✎ Cambiar ingresos", "💬 Ask the assistant": "💬 Preguntar al asistente", "Save income": "Guardar ingresos", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Escribe importes de 0 o más, con flojo ≤ normal ≤ bueno.", "✓ Income updated": "✓ Ingresos actualizados"},
+   "da":{"Money & health tracker": "Penge og sundhed", "Overall grade": "Samlet karakter", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Din samlede karakter fra S (bedst) til E, ud fra dine tal for penge og sundhed. Se Statistik og karakterer for at se hvorfor.", "Move data": "Flyt data", "Your plan": "Din plan", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Hele din plan på én skærm, bygget på din egen indkomst, dine regninger og abonnementer. Alle sider bruger de samme tal.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Vælg et tidspunkt, så afspiller vi en lyd for at minde dig om det — hver dag, mens MRLN er åben.", "Time in MRLN ⏱": "Tid i MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Alle ændringer, du har lavet — tilføjet, rettet, slettet, sikkerhedskopieret. Listen gemmes sammen med dine data og kommer med i hver sikkerhedskopi.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · virker offline · gemt på denne enhed · ikke økonomisk eller medicinsk rådgivning ·", "🔒 Lock MRLN": "🔒 Lås MRLN", "🔒 Lock MRLN?": "🔒 Lås MRLN?", "Lock MRLN — you'll need your access key to open it again": "Lås MRLN — du skal bruge din adgangsnøgle for at åbne den igen", "You’ll need your access key to open it again.": "Du skal bruge din adgangsnøgle for at åbne den igen.", "Lock": "Lås", "Classic": "Klassisk", "✓ Backup downloaded": "✓ Sikkerhedskopi hentet", "Settings": "Indstillinger", "Streak": "Stime", "Days in a row you've used MRLN": "Dage i træk, du har brugt MRLN", "+ Add cost": "+ Tilføj udgift", "One-off (this month)": "Én gang (denne måned)", "One-off": "Én gang", "one-off": "én gang", "Close": "Luk", "Amount": "Beløb", "How often": "Hvor ofte", "Change {name}": "Ret {name}", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Tryk på en udgift for at rette eller slette den. Tryk på Rediger for at tilføje eller fjerne kategorier.", "Your data": "Dine data", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Dine data er gemt i denne browser på denne enhed. Intet bliver uploadet. Hent en sikkerhedskopi en gang imellem, så du har en kopi.", "⬇ Back up (download)": "⬇ Tag en sikkerhedskopi (hent)", "Download a backup file with all your data": "Hent en fil med alle dine data", "⬆ Restore from a backup": "⬆ Gendan fra en sikkerhedskopi", "⬆ Restore this backup?": "⬆ Gendan denne sikkerhedskopi?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Det erstatter alt på denne enhed med sikkerhedskopien: indkomst, udgifter, noter, kalender og madlog. Din adgangsnøgle bliver.", "Restore": "Gendan", "✓ Backup restored": "✓ Sikkerhedskopien er gendannet", "⇄ Move to another device": "⇄ Flyt til en anden enhed", "Copy your data to your other phone or browser": "Kopiér dine data til din anden telefon eller browser", "📲 Install or copy link": "📲 Installér eller kopiér link", "Install MRLN on this device, or copy your link": "Installér MRLN på denne enhed, eller kopiér dit link", "Include my access key in backups": "Gem min adgangsnøgle i sikkerhedskopier", "Backups then open without typing your key. Turn off if you'll share the file.": "Så åbner sikkerhedskopier uden at du skal skrive nøglen. Slå det fra, hvis du vil dele filen.", "Saved on this device ✓": "Gemt på denne enhed ✓", "Nothing saved yet": "Intet gemt endnu", "● Try mode — download a backup to keep your data": "● Prøvetilstand — hent en sikkerhedskopi for at beholde dine data", "● Not saving here — open MRLN in your browser": "● Gemmer ikke her — åbn MRLN i din browser", "● Storage is full — download a backup to free space": "● Lageret er fuldt — hent en sikkerhedskopi for at frigøre plads", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Dine data.</b> De er gemt på denne enhed. Her kan du tage en sikkerhedskopi, gendanne, flytte til en anden enhed eller slette det hele.", "🧾 Change log": "🧾 Ændringslog", "Your monthly take-home pay (after tax). Change it any time below.": "Det, du får udbetalt om måneden (efter skat). Du kan ændre det når som helst herunder.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Ret tallene her, eller skriv det til Assistent MRLN med dine egne ord, fx “jeg tjener 18000 om måneden”.", "✎ Change income": "✎ Ret indkomst", "💬 Ask the assistant": "💬 Spørg assistenten", "Save income": "Gem indkomst", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Skriv beløb på 0 eller mere, hvor svag ≤ typisk ≤ god.", "✓ Income updated": "✓ Indkomsten er opdateret"},
+   "de":{"Money & health tracker": "Geld & Gesundheit", "Overall grade": "Gesamtnote", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Deine Gesamtnote von S (beste) bis E, berechnet aus deinen Geld- und Gesundheitswerten. Unter Statistik & Noten siehst du, warum.", "Move data": "Daten umziehen", "Your plan": "Dein Plan", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Dein ganzer Plan auf einem Bildschirm, gebaut aus deinem Einkommen, deinen Rechnungen und Abos. Alle Seiten nutzen dieselben Zahlen.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Wähle eine Uhrzeit, dann erinnert dich ein Ton daran — täglich, solange MRLN geöffnet ist.", "Time in MRLN ⏱": "Zeit in MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Jede Änderung, die du gemacht hast — hinzugefügt, bearbeitet, gelöscht, gesichert. Sie liegt bei deinen Daten und ist in jeder Sicherung enthalten.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · funktioniert offline · auf diesem Gerät gespeichert · keine Finanz- oder medizinische Beratung ·", "🔒 Lock MRLN": "🔒 MRLN sperren", "🔒 Lock MRLN?": "🔒 MRLN sperren?", "Lock MRLN — you'll need your access key to open it again": "MRLN sperren — zum Öffnen brauchst du wieder deinen Zugangsschlüssel", "You’ll need your access key to open it again.": "Zum erneuten Öffnen brauchst du deinen Zugangsschlüssel.", "Lock": "Sperren", "Classic": "Klassisch", "✓ Backup downloaded": "✓ Sicherung heruntergeladen", "Settings": "Einstellungen", "Streak": "Serie", "Days in a row you've used MRLN": "Tage in Folge, an denen du MRLN genutzt hast", "+ Add cost": "+ Kosten hinzufügen", "One-off (this month)": "Einmalig (diesen Monat)", "One-off": "Einmalig", "one-off": "einmalig", "Close": "Schließen", "Amount": "Betrag", "How often": "Wie oft", "Change {name}": "{name} ändern", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Tippe auf eine Ausgabe, um sie zu ändern oder zu löschen. Tippe auf Bearbeiten, um Kategorien hinzuzufügen oder zu entfernen.", "Your data": "Deine Daten", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Deine Daten sind in diesem Browser auf diesem Gerät gespeichert. Nichts wird hochgeladen. Lade ab und zu eine Sicherung herunter, damit du eine Kopie hast.", "⬇ Back up (download)": "⬇ Sichern (herunterladen)", "Download a backup file with all your data": "Lade eine Datei mit all deinen Daten herunter", "⬆ Restore from a backup": "⬆ Aus einer Sicherung wiederherstellen", "⬆ Restore this backup?": "⬆ Diese Sicherung wiederherstellen?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Damit wird alles auf diesem Gerät durch die Sicherung ersetzt: Einkommen, Kosten, Notizen, Kalender und Ernährungslog. Dein Zugangsschlüssel bleibt.", "Restore": "Wiederherstellen", "✓ Backup restored": "✓ Sicherung wiederhergestellt", "⇄ Move to another device": "⇄ Auf ein anderes Gerät umziehen", "Copy your data to your other phone or browser": "Kopiere deine Daten auf dein anderes Handy oder in einen anderen Browser", "📲 Install or copy link": "📲 Installieren oder Link kopieren", "Install MRLN on this device, or copy your link": "Installiere MRLN auf diesem Gerät oder kopiere deinen Link", "Include my access key in backups": "Zugangsschlüssel in Sicherungen aufnehmen", "Backups then open without typing your key. Turn off if you'll share the file.": "Sicherungen öffnen sich dann ohne Schlüsseleingabe. Schalte es aus, wenn du die Datei teilen willst.", "Saved on this device ✓": "Auf diesem Gerät gespeichert ✓", "Nothing saved yet": "Noch nichts gespeichert", "● Try mode — download a backup to keep your data": "● Testmodus — lade eine Sicherung herunter, um deine Daten zu behalten", "● Not saving here — open MRLN in your browser": "● Hier wird nicht gespeichert — öffne MRLN in deinem Browser", "● Storage is full — download a backup to free space": "● Speicher voll — lade eine Sicherung herunter, um Platz zu schaffen", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Deine Daten.</b> Sie sind auf diesem Gerät gespeichert. Hier kannst du sichern, wiederherstellen, auf ein anderes Gerät umziehen oder alles löschen.", "🧾 Change log": "🧾 Änderungsprotokoll", "Your monthly take-home pay (after tax). Change it any time below.": "Dein monatliches Nettoeinkommen (nach Steuern). Du kannst es unten jederzeit ändern.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Ändere die Zahlen hier oder sag es Assistent MRLN in eigenen Worten, z. B. „ich verdiene 18000 im Monat“.", "✎ Change income": "✎ Einkommen ändern", "💬 Ask the assistant": "💬 Assistent fragen", "Save income": "Einkommen speichern", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Gib Beträge ab 0 ein, mit schwach ≤ typisch ≤ gut.", "✓ Income updated": "✓ Einkommen aktualisiert"},
+   "sv":{"Money & health tracker": "Ekonomi och hälsa", "Overall grade": "Totalbetyg", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Ditt totalbetyg från S (bäst) till E, byggt på dina siffror för ekonomi och hälsa. Se Statistik och betyg för varför.", "Move data": "Flytta data", "Your plan": "Din plan", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Hela din plan på en skärm, byggd på din egen inkomst, dina räkningar och abonnemang. Alla sidor använder samma siffror.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Välj en tid så spelar vi ett ljud för att påminna dig — varje dag, medan MRLN är öppen.", "Time in MRLN ⏱": "Tid i MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Alla ändringar du har gjort — tillagt, ändrat, raderat, säkerhetskopierat. Listan sparas med din data och följer med i varje säkerhetskopia.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · fungerar offline · sparas på den här enheten · inte ekonomisk eller medicinsk rådgivning ·", "🔒 Lock MRLN": "🔒 Lås MRLN", "🔒 Lock MRLN?": "🔒 Låsa MRLN?", "Lock MRLN — you'll need your access key to open it again": "Lås MRLN — du behöver din åtkomstnyckel för att öppna den igen", "You’ll need your access key to open it again.": "Du behöver din åtkomstnyckel för att öppna den igen.", "Lock": "Lås", "Classic": "Klassisk", "✓ Backup downloaded": "✓ Säkerhetskopia nedladdad", "Settings": "Inställningar", "Streak": "Svit", "Days in a row you've used MRLN": "Dagar i rad du har använt MRLN", "+ Add cost": "+ Lägg till kostnad", "One-off (this month)": "Engång (den här månaden)", "One-off": "Engång", "one-off": "engång", "Close": "Stäng", "Amount": "Belopp", "How often": "Hur ofta", "Change {name}": "Ändra {name}", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Tryck på en kostnad för att ändra eller radera den. Tryck på Redigera för att lägga till eller ta bort kategorier.", "Your data": "Din data", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Din data sparas i den här webbläsaren på den här enheten. Inget laddas upp. Ladda ner en säkerhetskopia då och då så att du har en kopia.", "⬇ Back up (download)": "⬇ Säkerhetskopiera (ladda ner)", "Download a backup file with all your data": "Ladda ner en fil med all din data", "⬆ Restore from a backup": "⬆ Återställ från en säkerhetskopia", "⬆ Restore this backup?": "⬆ Återställa den här säkerhetskopian?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Allt på den här enheten ersätts med säkerhetskopian: inkomst, kostnader, anteckningar, kalender och matlogg. Din åtkomstnyckel ligger kvar.", "Restore": "Återställ", "✓ Backup restored": "✓ Säkerhetskopian är återställd", "⇄ Move to another device": "⇄ Flytta till en annan enhet", "Copy your data to your other phone or browser": "Kopiera din data till din andra telefon eller webbläsare", "📲 Install or copy link": "📲 Installera eller kopiera länk", "Install MRLN on this device, or copy your link": "Installera MRLN på den här enheten eller kopiera din länk", "Include my access key in backups": "Ta med min åtkomstnyckel i säkerhetskopior", "Backups then open without typing your key. Turn off if you'll share the file.": "Då öppnas säkerhetskopior utan att du skriver nyckeln. Stäng av om du ska dela filen.", "Saved on this device ✓": "Sparat på den här enheten ✓", "Nothing saved yet": "Inget sparat än", "● Try mode — download a backup to keep your data": "● Testläge — ladda ner en säkerhetskopia för att behålla din data", "● Not saving here — open MRLN in your browser": "● Sparar inte här — öppna MRLN i din webbläsare", "● Storage is full — download a backup to free space": "● Lagringen är full — ladda ner en säkerhetskopia för att frigöra plats", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Din data.</b> Den sparas på den här enheten. Här kan du säkerhetskopiera, återställa, flytta till en annan enhet eller radera allt.", "🧾 Change log": "🧾 Ändringslogg", "Your monthly take-home pay (after tax). Change it any time below.": "Det du får ut varje månad (efter skatt). Ändra det när du vill här nedanför.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Ändra siffrorna här, eller skriv det till Assistent MRLN med egna ord, t.ex. ”jag tjänar 18000 i månaden”.", "✎ Change income": "✎ Ändra inkomst", "💬 Ask the assistant": "💬 Fråga assistenten", "Save income": "Spara inkomst", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Ange belopp på 0 eller mer, där svag ≤ typisk ≤ bra.", "✓ Income updated": "✓ Inkomsten är uppdaterad"},
+   "nb":{"Money & health tracker": "Penger og helse", "Overall grade": "Samlet karakter", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Den samlede karakteren din fra S (best) til E, basert på tallene dine for penger og helse. Se Statistikk og karakterer for hvorfor.", "Move data": "Flytt data", "Your plan": "Planen din", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Hele planen din på én skjerm, bygd på din egen inntekt, regningene og abonnementene dine. Alle sidene bruker de samme tallene.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Velg et tidspunkt, så spiller vi en lyd for å minne deg på det — hver dag, mens MRLN er åpen.", "Time in MRLN ⏱": "Tid i MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Alle endringer du har gjort — lagt til, endret, slettet, sikkerhetskopiert. Listen lagres sammen med dataene dine og er med i hver sikkerhetskopi.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · virker uten nett · lagret på denne enheten · ikke økonomisk eller medisinsk rådgivning ·", "🔒 Lock MRLN": "🔒 Lås MRLN", "🔒 Lock MRLN?": "🔒 Låse MRLN?", "Lock MRLN — you'll need your access key to open it again": "Lås MRLN — du trenger tilgangsnøkkelen for å åpne den igjen", "You’ll need your access key to open it again.": "Du trenger tilgangsnøkkelen for å åpne den igjen.", "Lock": "Lås", "Classic": "Klassisk", "✓ Backup downloaded": "✓ Sikkerhetskopi lastet ned", "Settings": "Innstillinger", "Streak": "Rekke", "Days in a row you've used MRLN": "Dager på rad du har brukt MRLN", "+ Add cost": "+ Legg til utgift", "One-off (this month)": "Én gang (denne måneden)", "One-off": "Én gang", "one-off": "én gang", "Close": "Lukk", "Amount": "Beløp", "How often": "Hvor ofte", "Change {name}": "Endre {name}", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Trykk på en utgift for å endre eller slette den. Trykk på Rediger for å legge til eller fjerne kategorier.", "Your data": "Dataene dine", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Dataene dine er lagret i denne nettleseren på denne enheten. Ingenting lastes opp. Last ned en sikkerhetskopi innimellom, så har du en kopi.", "⬇ Back up (download)": "⬇ Ta sikkerhetskopi (last ned)", "Download a backup file with all your data": "Last ned en fil med alle dataene dine", "⬆ Restore from a backup": "⬆ Gjenopprett fra en sikkerhetskopi", "⬆ Restore this backup?": "⬆ Gjenopprette denne sikkerhetskopien?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Alt på denne enheten erstattes med sikkerhetskopien: inntekt, utgifter, notater, kalender og matlogg. Tilgangsnøkkelen din blir værende.", "Restore": "Gjenopprett", "✓ Backup restored": "✓ Sikkerhetskopien er gjenopprettet", "⇄ Move to another device": "⇄ Flytt til en annen enhet", "Copy your data to your other phone or browser": "Kopier dataene dine til den andre telefonen eller nettleseren", "📲 Install or copy link": "📲 Installer eller kopier lenke", "Install MRLN on this device, or copy your link": "Installer MRLN på denne enheten, eller kopier lenken din", "Include my access key in backups": "Ta med tilgangsnøkkelen i sikkerhetskopier", "Backups then open without typing your key. Turn off if you'll share the file.": "Da åpnes sikkerhetskopier uten at du må skrive nøkkelen. Slå av hvis du skal dele filen.", "Saved on this device ✓": "Lagret på denne enheten ✓", "Nothing saved yet": "Ingenting lagret ennå", "● Try mode — download a backup to keep your data": "● Prøvemodus — last ned en sikkerhetskopi for å beholde dataene", "● Not saving here — open MRLN in your browser": "● Lagrer ikke her — åpne MRLN i nettleseren din", "● Storage is full — download a backup to free space": "● Lagringen er full — last ned en sikkerhetskopi for å frigjøre plass", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Dataene dine.</b> De er lagret på denne enheten. Her kan du ta sikkerhetskopi, gjenopprette, flytte til en annen enhet eller slette alt.", "🧾 Change log": "🧾 Endringslogg", "Your monthly take-home pay (after tax). Change it any time below.": "Det du får utbetalt i måneden (etter skatt). Du kan endre det når som helst her under.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Endre tallene her, eller skriv det til Assistent MRLN med egne ord, f.eks. «jeg tjener 18000 i måneden».", "✎ Change income": "✎ Endre inntekt", "💬 Ask the assistant": "💬 Spør assistenten", "Save income": "Lagre inntekt", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Skriv beløp på 0 eller mer, der svak ≤ typisk ≤ god.", "✓ Income updated": "✓ Inntekten er oppdatert"},
+   "hu":{"Money & health tracker": "Pénz és egészség", "Overall grade": "Összesített jegy", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Az összesített jegyed S-től (legjobb) E-ig, a pénzügyi és egészségügyi számaidból. Az okát a Statisztika és jegyek oldalon látod.", "Move data": "Adatok áthelyezése", "Your plan": "A terved", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Az egész terved egy képernyőn, a saját bevételedből, számláidból és előfizetéseidből. Minden oldal ugyanazokat a számokat használja.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Válassz egy időpontot, és egy hanggal emlékeztetünk — naponta, amíg az MRLN nyitva van.", "Time in MRLN ⏱": "MRLN-ben töltött idő ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Minden változtatásod — hozzáadás, szerkesztés, törlés, mentés. Az adataiddal együtt tároljuk, és minden biztonsági mentésben benne van.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · offline is működik · ezen az eszközön tárolva · nem pénzügyi vagy orvosi tanácsadás ·", "🔒 Lock MRLN": "🔒 MRLN zárolása", "🔒 Lock MRLN?": "🔒 Zárolod az MRLN-t?", "Lock MRLN — you'll need your access key to open it again": "MRLN zárolása — az újbóli megnyitáshoz kell a hozzáférési kulcsod", "You’ll need your access key to open it again.": "Az újbóli megnyitáshoz szükséged lesz a hozzáférési kulcsodra.", "Lock": "Zárolás", "Classic": "Klasszikus", "✓ Backup downloaded": "✓ Biztonsági mentés letöltve", "Settings": "Beállítások", "Streak": "Sorozat", "Days in a row you've used MRLN": "Ennyi egymást követő napon használtad az MRLN-t", "+ Add cost": "+ Kiadás hozzáadása", "One-off (this month)": "Egyszeri (ebben a hónapban)", "One-off": "Egyszeri", "one-off": "egyszeri", "Close": "Bezárás", "Amount": "Összeg", "How often": "Milyen gyakran", "Change {name}": "{name} módosítása", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Koppints egy kiadásra a módosításhoz vagy törléshez. A Szerkesztés gombbal kategóriákat adhatsz hozzá vagy törölhetsz.", "Your data": "Az adataid", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Az adataid ebben a böngészőben, ezen az eszközön vannak. Semmi nem kerül feltöltésre. Időnként tölts le egy biztonsági mentést, hogy legyen másolatod.", "⬇ Back up (download)": "⬇ Biztonsági mentés (letöltés)", "Download a backup file with all your data": "Tölts le egy fájlt az összes adatoddal", "⬆ Restore from a backup": "⬆ Visszaállítás mentésből", "⬆ Restore this backup?": "⬆ Visszaállítod ezt a mentést?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Ez az eszközön lévő mindent lecserél a mentésre: bevétel, kiadások, jegyzetek, naptár és étkezési napló. A hozzáférési kulcsod megmarad.", "Restore": "Visszaállítás", "✓ Backup restored": "✓ Mentés visszaállítva", "⇄ Move to another device": "⇄ Áthelyezés másik eszközre", "Copy your data to your other phone or browser": "Másold át az adataidat a másik telefonodra vagy böngésződbe", "📲 Install or copy link": "📲 Telepítés vagy link másolása", "Install MRLN on this device, or copy your link": "Telepítsd az MRLN-t erre az eszközre, vagy másold a linkedet", "Include my access key in backups": "Hozzáférési kulcs a mentésekben", "Backups then open without typing your key. Turn off if you'll share the file.": "Így a mentés kulcs beírása nélkül nyílik meg. Kapcsold ki, ha megosztod a fájlt.", "Saved on this device ✓": "Elmentve ezen az eszközön ✓", "Nothing saved yet": "Még nincs mentve semmi", "● Try mode — download a backup to keep your data": "● Próba mód — tölts le egy mentést, hogy megmaradjanak az adataid", "● Not saving here — open MRLN in your browser": "● Itt nem ment — nyisd meg az MRLN-t a böngésződben", "● Storage is full — download a backup to free space": "● Megtelt a tárhely — tölts le egy mentést a helyfelszabadításhoz", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Az adataid.</b> Ezen az eszközön vannak. Itt menthetsz, visszaállíthatsz, másik eszközre költözhetsz vagy mindent törölhetsz.", "🧾 Change log": "🧾 Változásnapló", "Your monthly take-home pay (after tax). Change it any time below.": "A havi nettó fizetésed (adózás után). Lent bármikor módosíthatod.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Itt módosíthatod a számokat, vagy írd meg MRLN Asszisztensnek a saját szavaiddal, pl. „havi 18000-et keresek”.", "✎ Change income": "✎ Bevétel módosítása", "💬 Ask the assistant": "💬 Kérdezd az asszisztenst", "Save income": "Bevétel mentése", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "0 vagy nagyobb összeget adj meg, gyenge ≤ átlagos ≤ jó sorrendben.", "✓ Income updated": "✓ Bevétel frissítve"},
+   "fr":{"Money & health tracker": "Argent et santé", "Overall grade": "Note globale", "Your overall grade from S (best) to E, built from your money and health numbers. See Stats & Grades for why.": "Votre note globale de S (la meilleure) à E, calculée à partir de vos chiffres d'argent et de santé. Voir Stats et notes pour comprendre.", "Move data": "Déplacer les données", "Your plan": "Votre plan", "Your whole plan on one screen, built from your own income, bills and subscriptions. Every page uses the same numbers.": "Tout votre plan sur un seul écran, construit à partir de vos revenus, factures et abonnements. Chaque page utilise les mêmes chiffres.", "Pick a time and we'll play a sound to remind you — daily, while MRLN is open.": "Choisissez une heure et un son vous le rappellera, chaque jour, tant que MRLN est ouvert.", "Time in MRLN ⏱": "Temps passé dans MRLN ⏱", "Every change you’ve made — added, edited, deleted, backed up. It’s kept with your data and included in every backup.": "Chaque modification que vous avez faite : ajout, modification, suppression, sauvegarde. Elle est gardée avec vos données et incluse dans chaque sauvegarde.", "MRLN · works offline · saved on this device · not financial or medical advice ·": "MRLN · fonctionne hors ligne · enregistré sur cet appareil · pas un conseil financier ou médical ·", "🔒 Lock MRLN": "🔒 Verrouiller MRLN", "🔒 Lock MRLN?": "🔒 Verrouiller MRLN ?", "Lock MRLN — you'll need your access key to open it again": "Verrouiller MRLN : il vous faudra votre clé d'accès pour le rouvrir", "You’ll need your access key to open it again.": "Il vous faudra votre clé d'accès pour le rouvrir.", "Lock": "Verrouiller", "Classic": "Classique", "✓ Backup downloaded": "✓ Sauvegarde téléchargée", "Settings": "Réglages", "Streak": "Série", "Days in a row you've used MRLN": "Jours d'affilée où vous avez utilisé MRLN", "+ Add cost": "+ Ajouter une dépense", "One-off (this month)": "Ponctuelle (ce mois-ci)", "One-off": "Ponctuelle", "one-off": "ponctuelle", "Close": "Fermer", "Amount": "Montant", "How often": "Fréquence", "Change {name}": "Modifier {name}", "Tap any cost to change or delete it. Tap Edit to add or remove categories.": "Touchez une dépense pour la modifier ou la supprimer. Touchez Modifier pour ajouter ou retirer des catégories.", "Your data": "Vos données", "Your data is saved in this browser on this device. Nothing is uploaded. Download a backup now and then to keep a copy.": "Vos données sont enregistrées dans ce navigateur, sur cet appareil. Rien n'est envoyé en ligne. Téléchargez une sauvegarde de temps en temps pour en garder une copie.", "⬇ Back up (download)": "⬇ Sauvegarder (télécharger)", "Download a backup file with all your data": "Téléchargez un fichier avec toutes vos données", "⬆ Restore from a backup": "⬆ Restaurer une sauvegarde", "⬆ Restore this backup?": "⬆ Restaurer cette sauvegarde ?", "This replaces everything on this device with the backup: income, costs, notes, calendar and food log. Your access key stays.": "Tout ce qui se trouve sur cet appareil sera remplacé par la sauvegarde : revenus, dépenses, notes, calendrier et journal alimentaire. Votre clé d'accès reste.", "Restore": "Restaurer", "✓ Backup restored": "✓ Sauvegarde restaurée", "⇄ Move to another device": "⇄ Transférer vers un autre appareil", "Copy your data to your other phone or browser": "Copiez vos données vers votre autre téléphone ou navigateur", "📲 Install or copy link": "📲 Installer ou copier le lien", "Install MRLN on this device, or copy your link": "Installez MRLN sur cet appareil ou copiez votre lien", "Include my access key in backups": "Inclure ma clé d'accès dans les sauvegardes", "Backups then open without typing your key. Turn off if you'll share the file.": "Les sauvegardes s'ouvrent alors sans saisir la clé. Désactivez si vous partagez le fichier.", "Saved on this device ✓": "Enregistré sur cet appareil ✓", "Nothing saved yet": "Rien n'est encore enregistré", "● Try mode — download a backup to keep your data": "● Mode essai : téléchargez une sauvegarde pour garder vos données", "● Not saving here — open MRLN in your browser": "● Rien n'est enregistré ici : ouvrez MRLN dans votre navigateur", "● Storage is full — download a backup to free space": "● Stockage plein : téléchargez une sauvegarde pour libérer de la place", "<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.": "<b>Vos données.</b> Elles sont enregistrées sur cet appareil. Ici vous pouvez sauvegarder, restaurer, transférer vers un autre appareil ou tout supprimer.", "🧾 Change log": "🧾 Historique des modifications", "Your monthly take-home pay (after tax). Change it any time below.": "Ce que vous touchez chaque mois (après impôts). Modifiez-le quand vous voulez ci-dessous.", "Change the figures here, or tell Assistant MRLN in plain words, like “I earn 18000 a month”.": "Modifiez les chiffres ici, ou dites-le à l'Assistant MRLN avec vos mots, par exemple « je gagne 18000 par mois ».", "✎ Change income": "✎ Modifier les revenus", "💬 Ask the assistant": "💬 Demander à l'assistant", "Save income": "Enregistrer les revenus", "Enter amounts of 0 or more, with slow ≤ typical ≤ good.": "Saisissez des montants de 0 ou plus, avec faible ≤ habituel ≤ bon.", "✓ Income updated": "✓ Revenus mis à jour"}
+  });
+  /* end plain-words strings */
 
   // t(): the one translation gate. Any English string passed through it is
   // auto-translated for the active language, or returned unchanged (English
@@ -7711,6 +7835,25 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var ct=document.getElementById('chatToggle'); if(ct) ct.click();
       var ci=document.getElementById('aiText'); if(ci) setTimeout(function(){ try{ ci.focus(); }catch(_){} }, 80);
     });
+    // Income → edit the three figures in place
+    var ie=document.getElementById('incEditBtn'), form=document.getElementById('incEditForm');
+    var INC=[['low','incInLow'],['avg','incInAvg'],['high','incInHigh']];
+    function incMsg(s,ok){ var m=document.getElementById('incEditMsg'); if(m){ m.style.display=s?'block':'none'; m.textContent=s; m.style.color=ok?'var(--lime)':'var(--red)'; } }
+    function incForm(on){
+      if(!form) return; form.style.display=on?'block':'none'; if(ie) ie.setAttribute('aria-expanded', on?'true':'false');
+      if(on){ INC.forEach(function(k){ var el=document.getElementById(k[1]); if(el) el.value=Math.round(MODEL.income[k[0]]||0); }); incMsg('');
+        var f=document.getElementById('incInAvg'); if(f) try{ f.focus(); }catch(_){ } }
+    }
+    if(ie) ie.addEventListener('click', function(){ incForm(form.style.display==='none'); });
+    var ic=document.getElementById('incCancelBtn'); if(ic) ic.addEventListener('click', function(){ incForm(false); });
+    var is=document.getElementById('incSaveBtn');
+    if(is) is.addEventListener('click', function(){
+      var v=INC.map(function(k){ var el=document.getElementById(k[1]); return parseFloat(el && el.value); });
+      if(v.some(function(x){ return !(x>=0); }) || v[0]>v[1] || v[1]>v[2]){ incMsg(t('Enter amounts of 0 or more, with slow ≤ typical ≤ good.'), false); return; }
+      INC.forEach(function(k,i){ if(Math.round(MODEL.income[k[0]]||0)!==v[i]) setIncome(k[0], v[i]); });
+      incForm(false); incMsg(t('✓ Income updated'), true);
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.save();
+    });
     // Change Log → re-open the "What's new" popup
     var wn=document.getElementById('whatsNewBtn');
     if(wn) wn.addEventListener('click', function(){ if(window.__showWhatsNew) window.__showWhatsNew(); });
@@ -7941,6 +8084,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function importMasterHTML(text){
     var raw=null;
     try{
+      var _tt=String(text||'').trim();
+      if(_tt.charAt(0)==='{'){ applyImportedData(JSON.parse(_tt)); return; }   // MRLN-backup-*.json
       var doc=new DOMParser().parseFromString(String(text||''),'text/html');
       var hs=doc.getElementById('hud-state');
       if(hs && hs.textContent.trim()) raw=JSON.parse(hs.textContent);
@@ -9650,7 +9795,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       {sel:'#dock button[data-sect="Life"]', text:'<b>Life.</b> Calendar, notebook and your media log — reminders and notes included.'},
       {sel:'#hdrGear', text:'<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time.'},
       {sel:'#dock button[data-util="bot"]', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
-      {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'}
+      {sel:'#hdrSave', text:'<b>Your data.</b> It is saved on this device. Back up, restore, move to another device or delete everything here.'}
     ];
     var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
     // reposition ONLY — moves the ring/tip to follow the element. Never scrolls,
@@ -9931,7 +10076,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(fo){
         fo.innerHTML = '<div style="color:var(--txt-dim);font-size:13px;margin-bottom:3px">🔗 LINK — send this (works on iPhone too), then the key below:</div>'
           + '<div id="mintLink" style="color:var(--lime);word-break:break-all;cursor:pointer;user-select:text">'+esc(link)+'</div>'
-          + '<div style="color:var(--txt-dim);font-size:13px;margin-top:6px">File ID '+fid+(isNew?' · offline file also downloaded: finance-hud-'+fid+'.html':' · renewal (no new file)')+'</div>';
+          + '<div style="color:var(--txt-dim);font-size:13px;margin-top:6px">File ID '+fid+(isNew?' · offline file also downloaded: MRLN-'+fid+'.html':' · renewal (no new file)')+'</div>';
         var lk=document.getElementById('mintLink'); if(lk) lk.addEventListener('click', function(){ try{ var r=document.createRange(); r.selectNodeContents(lk); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(_){} });
       }
       var when; try{ when=new Date(res.exp*1000).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(_){ when=''; }
@@ -10430,7 +10575,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var _lnk=document.querySelector('link[rel="manifest"]');
         if(_lnk){
           var _dir=location.origin+location.pathname.replace(/[^\/]*$/,'');
-          var _mani={ name:'MRLN — Finance & Health HUD', short_name:'MRLN',
+          var _mani={ name:'MRLN — Money & Health', short_name:'MRLN',
             start_url:location.origin+location.pathname+'#'+_fid, scope:_dir, id:location.pathname+'#'+_fid,
             display:'standalone', orientation:'portrait', background_color:'#03070e', theme_color:'#03070e',
             icons:[{src:_dir+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:_dir+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:_dir+'icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}] };

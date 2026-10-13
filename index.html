@@ -14,8 +14,20 @@
 <script>document.documentElement.classList.add('js')</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MRLN</title>
-<meta name="description" content="MRLN is two things: a private money & health app, and a web-design studio for local businesses. Open the app or explore the studio.">
+<meta name="description" content="A money and health tracker that works offline, and websites for local businesses. Both made by one person.">
 <link rel="canonical" href="https://mrln.online/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MRLN">
+<meta property="og:url" content="https://mrln.online/">
+<meta property="og:title" content="MRLN: money and health app, and websites for local businesses">
+<meta property="og:description" content="A money and health tracker that works offline, and websites for local businesses. Both made by one person.">
+<meta property="og:image" content="https://mrln.online/assets/og/index.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MRLN: money and health app, and websites for local businesses">
+<meta name="twitter:description" content="A money and health tracker that works offline, and websites for local businesses. Both made by one person.">
+<meta name="twitter:image" content="https://mrln.online/assets/og/index.png">
 <style>
 :root{
   --bg:#eef3fb; --card:#ffffff; --ink:#101a2b; --muted:#4a5570; --faint:#5c6884;
@@ -121,6 +133,10 @@ img,svg{max-width:100%;display:block}
 .browser .top{height:38px;background:#f1f5fb;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 14px}
 .browser .top i{width:10px;height:10px;border-radius:50%;background:#d3dced;display:block}
 .browser .top .url{margin-left:10px;height:20px;flex:1;max-width:220px;background:#fff;border:1px solid var(--line);border-radius:6px}
+.phone .shot{width:100%;height:100%;object-fit:cover;object-position:top}
+.browser{display:block}
+.browser .url{font-family:var(--mono);font-size:11px;color:var(--faint);padding:2px 8px;line-height:16px;overflow:hidden;white-space:nowrap}
+.browser .shot{width:100%;height:auto}
 .site{padding:20px}
 .site .snav{display:flex;align-items:center;gap:8px;margin-bottom:16px}
 .site .logo{width:26px;height:26px;border-radius:7px;background:var(--studio)}
@@ -162,51 +178,45 @@ img,svg{max-width:100%;display:block}
     <div class="wrap">
       <p class="eyebrow" data-i18n="eyebrow">Welcome to MRLN</p>
       <h1 data-i18n="h1">What are you here for?</h1>
-      <p class="lead" data-i18n-html="lead">MRLN is two things: a <b>private money &amp; health app</b>, and a <b>web-design studio</b> for local businesses. Pick the one you came for &mdash; or scroll to see what each is.</p>
+      <p class="lead" data-i18n="lead">I make two things under the MRLN name: a money and health app, and websites for local businesses. Pick one below, or scroll down to read about both.</p>
 
       <div class="choices">
         <div class="choice choice-app rv">
           <div class="ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="20" rx="3" stroke="#1f5fd0" stroke-width="1.7"/><circle cx="12" cy="18" r="1.2" fill="#1f5fd0"/></svg></div>
-          <span class="tag" data-i18n="app_tag">The App</span>
-          <h2 data-i18n="app_h">MRLN App</h2>
-          <p data-i18n="app_p">Your money &amp; health in one private app that lives only on your device. No account, no cloud.</p>
-          <a class="btn btn-app" href="mrln.html"><span data-i18n="app_cta">Open MRLN App</span> <span class="ar" aria-hidden="true">&rarr;</span></a>
+          <span class="tag" data-i18n="app_tag">The app</span>
+          <h2 data-i18n="app_h">MRLN app</h2>
+          <p data-i18n="app_p">Track your budget, workouts, meals and plans in one app. What you enter is saved on your own device.</p>
+          <a class="btn btn-app" href="mrln.html"><span data-i18n="app_cta">MRLN app</span> <span class="ar" aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="choice choice-studio rv">
           <div class="ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="13" rx="2" stroke="#9a6a16" stroke-width="1.7"/><path d="M9 21h6M12 17v4" stroke="#9a6a16" stroke-width="1.7" stroke-linecap="round"/></svg></div>
-          <span class="tag" data-i18n="studio_tag">The Studio</span>
-          <h2 data-i18n="studio_h">MRLN Studio</h2>
-          <p data-i18n="studio_p">We build websites that bring local businesses more customers &mdash; then host and keep them up to date.</p>
-          <a class="btn btn-studio" href="portfolio.html"><span data-i18n="studio_cta">Open MRLN Studio</span> <span class="ar" aria-hidden="true">&rarr;</span></a>
+          <span class="tag" data-i18n="studio_tag">Websites</span>
+          <h2 data-i18n="studio_h">MRLN websites</h2>
+          <p data-i18n="studio_p">I build websites for local businesses, host them and keep them up to date for a monthly fee.</p>
+          <a class="btn btn-studio" href="portfolio.html"><span data-i18n="studio_cta">See example sites</span> <span class="ar" aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
 
-      <a class="scrollcue" href="#app"><span data-i18n="scrollcue">New here? Scroll to learn more</span> <span aria-hidden="true">&darr;</span></a>
+      <a class="scrollcue" href="#app"><span data-i18n="scrollcue">Read more about both</span> <span aria-hidden="true">&darr;</span></a>
     </div>
   </section>
 
   <section class="section section-app" id="app">
     <div class="wrap">
       <div class="text rv">
-        <p class="kicker" data-i18n="app_kicker">The MRLN App</p>
-        <h3 data-i18n="app_title">A private place for your whole life.</h3>
-        <p class="big" data-i18n="app_lead">Track your money, health, plans, notes and more &mdash; in one calm app. Everything stays on your device: no account to make, no cloud, nothing shared.</p>
+        <p class="kicker" data-i18n="app_kicker">The MRLN app</p>
+        <h3 data-i18n="app_title">Money, health and plans in one app.</h3>
+        <p class="big" data-i18n="app_lead">Log your budget, income, workouts, meals, calendar and notes in one place. There's no account to create, and your entries are saved in the browser on your device.</p>
         <ul class="plist">
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="app_f1b">Money &amp; budget</b> &mdash; <span data-i18n="app_f1">see where it goes, plan ahead.</span></span></li>
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="app_f2b">Health &amp; gym</b> &mdash; <span data-i18n="app_f2">weight, workouts and food, tracked simply.</span></span></li>
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="app_f3b">Private by design</b> &mdash; <span data-i18n="app_f3">no account, no cloud; your data never leaves your device.</span></span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="app_f1">See where your money goes each month and plan ahead.</span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="app_f2">Log your weight, workouts and meals.</span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="app_f3">Works offline once it has loaded.</span></li>
         </ul>
-        <div class="go"><a class="btn btn-app" href="mrln.html"><span data-i18n="app_cta2">Open MRLN App</span> <span class="ar" aria-hidden="true">&rarr;</span></a></div>
+        <div class="go"><a class="btn btn-app" href="mrln.html"><span data-i18n="app_cta2">Read about the app</span> <span class="ar" aria-hidden="true">&rarr;</span></a></div>
       </div>
-      <div class="visual rv" aria-hidden="true">
+      <div class="visual rv">
         <div class="phone"><div class="scr"><span class="nub"></span>
-          <div class="mock-pad">
-            <div class="mock-h">MRLN</div><div class="mock-sub">This month</div>
-            <div class="ring"><i>72%</i></div>
-            <div class="mrow"><span class="d"></span><span class="t">Balance</span><span class="v">kr 42,180</span></div>
-            <div class="mrow"><span class="d"></span><span class="t">Sleep</span><span class="v">7h 42m</span></div>
-            <div class="mrow"><span class="d"></span><span class="t">Saved</span><span class="v">kr 3,500</span></div>
-          </div>
+          <img class="shot" id="appShot" src="assets/howto/expenses.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN budget screen with example data" data-i18n-alt="app_shot_alt">
         </div></div>
       </div>
     </div>
@@ -215,25 +225,21 @@ img,svg{max-width:100%;display:block}
   <section class="section section-studio flip" id="studio">
     <div class="wrap">
       <div class="text rv">
-        <p class="kicker" data-i18n="studio_kicker">MRLN Studio</p>
-        <h3 data-i18n="studio_title">Websites that win you more customers.</h3>
-        <p class="big" data-i18n="studio_lead">We design and build a modern website for your business, put it online, and keep it updated for you &mdash; so you can focus on the work, not the web.</p>
+        <p class="kicker" data-i18n="studio_kicker">MRLN websites</p>
+        <h3 data-i18n="studio_title">Websites for local businesses.</h3>
+        <p class="big" data-i18n="studio_lead">I design and build a website for your business, put it online and keep it updated. When something needs changing, you email me.</p>
         <ul class="plist">
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="studio_f1b">Made for your business</b> &mdash; <span data-i18n="studio_f1">a custom design, not a template.</span></span></li>
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="studio_f2b">Hosting &amp; updates included</b> &mdash; <span data-i18n="studio_f2">we keep it running and fresh.</span></span></li>
-          <li><span class="ck" aria-hidden="true">&check;</span><span><b data-i18n="studio_f3b">See real examples</b> &mdash; <span data-i18n="studio_f3">browse the portfolio of finished sites.</span></span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="studio_f1">Start from one of my example designs, adapted to your business.</span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="studio_f2">Hosting and updates are included in the monthly fee.</span></li>
+          <li><span class="ck" aria-hidden="true">&check;</span><span data-i18n="studio_f3">There are four example sites you can click through.</span></li>
         </ul>
-        <div class="go"><a class="btn btn-studio" href="portfolio.html"><span data-i18n="studio_cta2">Open MRLN Studio</span> <span class="ar" aria-hidden="true">&rarr;</span></a></div>
+        <div class="go"><a class="btn btn-studio" href="portfolio.html"><span data-i18n="studio_cta2">See example sites</span> <span class="ar" aria-hidden="true">&rarr;</span></a></div>
       </div>
-      <div class="visual rv" aria-hidden="true">
-        <div class="browser">
-          <div class="top"><i></i><i></i><i></i><span class="url"></span></div>
-          <div class="site">
-            <div class="snav"><span class="logo"></span><b>Your Business</b><span class="sp"><i></i><i></i><i></i></span></div>
-            <div class="hh"></div><div class="hl"></div><span class="pill"></span>
-            <div class="cards"><i></i><i></i><i></i></div>
-          </div>
-        </div>
+      <div class="visual rv">
+        <a class="browser" href="plumbing.html">
+          <div class="top" aria-hidden="true"><i></i><i></i><i></i><span class="url">nordvand-vvs.example</span></div>
+          <img class="shot" src="assets/plumbing-demo.webp" width="840" height="525" loading="lazy" decoding="async" alt="Demo site for a fictional plumber, NordVand VVS" data-i18n-alt="studio_shot_alt">
+        </a>
       </div>
     </div>
   </section>
@@ -242,57 +248,66 @@ img,svg{max-width:100%;display:block}
 <footer class="foot">
   <div class="wrap">
     <span>MRLN &middot; mrln.online</span>
-    <span data-i18n="foot">A private app for your life &mdash; and websites for your business.</span>
+    <span data-i18n="foot">A money and health app, and websites for local businesses.</span>
   </div>
 </footer>
 
 <script>
 var L10N = {
   en:{eyebrow:"Welcome to MRLN", h1:"What are you here for?",
-      lead:"MRLN is two things: a <b>private money &amp; health app</b>, and a <b>web-design studio</b> for local businesses. Pick the one you came for &mdash; or scroll to see what each is.",
-      app_tag:"The App", app_h:"MRLN App", app_p:"Your money & health in one private app that lives only on your device. No account, no cloud.", app_cta:"Open MRLN App", app_cta2:"Open MRLN App",
-      studio_tag:"The Studio", studio_h:"MRLN Studio", studio_p:"We build websites that bring local businesses more customers — then host and keep them up to date.", studio_cta:"Open MRLN Studio", studio_cta2:"Open MRLN Studio",
-      scrollcue:"New here? Scroll to learn more",
-      app_kicker:"The MRLN App", app_title:"A private place for your whole life.", app_lead:"Track your money, health, plans, notes and more — in one calm app. Everything stays on your device: no account to make, no cloud, nothing shared.",
-      app_f1b:"Money & budget", app_f1:"see where it goes, plan ahead.", app_f2b:"Health & gym", app_f2:"weight, workouts and food, tracked simply.", app_f3b:"Private by design", app_f3:"no account, no cloud; your data never leaves your device.",
-      studio_kicker:"MRLN Studio", studio_title:"Websites that win you more customers.", studio_lead:"We design and build a modern website for your business, put it online, and keep it updated for you — so you can focus on the work, not the web.",
-      studio_f1b:"Made for your business", studio_f1:"a custom design, not a template.", studio_f2b:"Hosting & updates included", studio_f2:"we keep it running and fresh.", studio_f3b:"See real examples", studio_f3:"browse the portfolio of finished sites.",
-      foot:"A private app for your life — and websites for your business."},
-  da:{eyebrow:"Velkommen til MRLN", h1:"Hvad er du her for?",
-      lead:"MRLN er to ting: en <b>privat økonomi- og sundhedsapp</b>, og et <b>webdesign-studie</b> for lokale virksomheder. Vælg det, du kom efter &mdash; eller scroll for at se hvad hver især er.",
-      app_tag:"Appen", app_h:"MRLN App", app_p:"Din økonomi og sundhed i én privat app, der kun findes på din egen enhed. Ingen konto, ingen sky.", app_cta:"Åbn MRLN App", app_cta2:"Åbn MRLN App",
-      studio_tag:"Studiet", studio_h:"MRLN Studio", studio_p:"Vi bygger hjemmesider, der giver lokale virksomheder flere kunder &mdash; og hoster og holder dem opdateret.", studio_cta:"Åbn MRLN Studio", studio_cta2:"Åbn MRLN Studio",
-      scrollcue:"Ny her? Scroll for at læse mere",
-      app_kicker:"MRLN App", app_title:"Et privat sted til hele dit liv.", app_lead:"Hold styr på din økonomi, sundhed, planer, noter og mere &mdash; i én rolig app. Alt bliver på din enhed: ingen konto, ingen sky, intet deles.",
-      app_f1b:"Økonomi & budget", app_f1:"se hvor pengene går, planlæg frem.", app_f2b:"Sundhed & træning", app_f2:"vægt, træning og mad, simpelt registreret.", app_f3b:"Privat af design", app_f3:"ingen konto, ingen sky; dine data forlader aldrig din enhed.",
-      studio_kicker:"MRLN Studio", studio_title:"Hjemmesider der giver dig flere kunder.", studio_lead:"Vi designer og bygger en moderne hjemmeside til din virksomhed, sætter den online og holder den opdateret for dig &mdash; så du kan fokusere på arbejdet, ikke på nettet.",
-      studio_f1b:"Lavet til din virksomhed", studio_f1:"et unikt design, ikke en skabelon.", studio_f2b:"Hosting & opdateringer inkluderet", studio_f2:"vi holder den kørende og frisk.", studio_f3b:"Se rigtige eksempler", studio_f3:"gennemse porteføljen af færdige sider.",
-      foot:"En privat app til dit liv &mdash; og hjemmesider til din virksomhed."},
-  de:{eyebrow:"Willkommen bei MRLN", h1:"Wofür sind Sie hier?",
-      lead:"MRLN ist zweierlei: eine <b>private Finanz- & Gesundheits-App</b> und ein <b>Webdesign-Studio</b> für lokale Unternehmen. Wählen Sie, wofür Sie gekommen sind &mdash; oder scrollen Sie, um beides zu sehen.",
-      app_tag:"Die App", app_h:"MRLN App", app_p:"Ihre Finanzen und Gesundheit in einer privaten App, die nur auf Ihrem Gerät lebt. Kein Konto, keine Cloud.", app_cta:"MRLN App öffnen", app_cta2:"MRLN App öffnen",
-      studio_tag:"Das Studio", studio_h:"MRLN Studio", studio_p:"Wir bauen Websites, die lokalen Unternehmen mehr Kunden bringen &mdash; und hosten und pflegen sie.", studio_cta:"MRLN Studio öffnen", studio_cta2:"MRLN Studio öffnen",
-      scrollcue:"Neu hier? Scrollen für mehr",
-      app_kicker:"Die MRLN App", app_title:"Ein privater Ort für Ihr ganzes Leben.", app_lead:"Verfolgen Sie Ihre Finanzen, Gesundheit, Pläne, Notizen und mehr &mdash; in einer ruhigen App. Alles bleibt auf Ihrem Gerät: kein Konto, keine Cloud, nichts geteilt.",
-      app_f1b:"Finanzen & Budget", app_f1:"sehen, wohin es geht, vorausplanen.", app_f2b:"Gesundheit & Fitness", app_f2:"Gewicht, Training und Essen, einfach erfasst.", app_f3b:"Privat by Design", app_f3:"kein Konto, keine Cloud; Ihre Daten verlassen nie Ihr Gerät.",
-      studio_kicker:"MRLN Studio", studio_title:"Websites, die Ihnen mehr Kunden bringen.", studio_lead:"Wir gestalten und bauen eine moderne Website für Ihr Unternehmen, bringen sie online und halten sie aktuell &mdash; damit Sie sich auf die Arbeit konzentrieren können.",
-      studio_f1b:"Für Ihr Unternehmen gemacht", studio_f1:"ein individuelles Design, keine Vorlage.", studio_f2b:"Hosting & Updates inklusive", studio_f2:"wir halten sie am Laufen und frisch.", studio_f3b:"Echte Beispiele ansehen", studio_f3:"durchstöbern Sie das Portfolio fertiger Seiten.",
-      foot:"Eine private App für Ihr Leben &mdash; und Websites für Ihr Unternehmen."},
-  es:{eyebrow:"Bienvenido a MRLN", h1:"¿A qué vienes?",
-      lead:"MRLN es dos cosas: una <b>app privada de finanzas y salud</b>, y un <b>estudio de diseño web</b> para negocios locales. Elige lo que buscas &mdash; o desplázate para ver cada una.",
-      app_tag:"La App", app_h:"MRLN App", app_p:"Tus finanzas y salud en una app privada que vive solo en tu dispositivo. Sin cuenta, sin nube.", app_cta:"Abrir MRLN App", app_cta2:"Abrir MRLN App",
-      studio_tag:"El Estudio", studio_h:"MRLN Studio", studio_p:"Creamos sitios web que atraen más clientes a negocios locales &mdash; y los alojamos y mantenemos actualizados.", studio_cta:"Abrir MRLN Studio", studio_cta2:"Abrir MRLN Studio",
-      scrollcue:"¿Nuevo aquí? Desplázate para saber más",
-      app_kicker:"La MRLN App", app_title:"Un lugar privado para toda tu vida.", app_lead:"Controla tu dinero, salud, planes, notas y más &mdash; en una app tranquila. Todo se queda en tu dispositivo: sin cuenta, sin nube, nada compartido.",
-      app_f1b:"Dinero y presupuesto", app_f1:"ve a dónde va, planifica con antelación.", app_f2b:"Salud y gimnasio", app_f2:"peso, entrenos y comida, registrados fácil.", app_f3b:"Privado por diseño", app_f3:"sin cuenta, sin nube; tus datos nunca salen de tu dispositivo.",
-      studio_kicker:"MRLN Studio", studio_title:"Sitios web que te dan más clientes.", studio_lead:"Diseñamos y creamos un sitio web moderno para tu negocio, lo publicamos y lo mantenemos actualizado &mdash; para que te centres en tu trabajo, no en la web.",
-      studio_f1b:"Hecho para tu negocio", studio_f1:"un diseño a medida, no una plantilla.", studio_f2b:"Alojamiento y actualizaciones incluidos", studio_f2:"lo mantenemos funcionando y fresco.", studio_f3b:"Mira ejemplos reales", studio_f3:"explora el portafolio de sitios terminados.",
-      foot:"Una app privada para tu vida &mdash; y sitios web para tu negocio."}
+      lead:"I make two things under the MRLN name: a money and health app, and websites for local businesses. Pick one below, or scroll down to read about both.",
+      app_tag:"The app", app_h:"MRLN app", app_p:"Track your budget, workouts, meals and plans in one app. What you enter is saved on your own device.", app_cta:"MRLN app", app_cta2:"Read about the app",
+      studio_tag:"Websites", studio_h:"MRLN websites", studio_p:"I build websites for local businesses, host them and keep them up to date for a monthly fee.", studio_cta:"See example sites", studio_cta2:"See example sites",
+      scrollcue:"Read more about both",
+      app_kicker:"The MRLN app", app_title:"Money, health and plans in one app.", app_lead:"Log your budget, income, workouts, meals, calendar and notes in one place. There's no account to create, and your entries are saved in the browser on your device.",
+      app_f1:"See where your money goes each month and plan ahead.", app_f2:"Log your weight, workouts and meals.", app_f3:"Works offline once it has loaded.",
+      app_shot_alt:"The MRLN budget screen with example data",
+      studio_kicker:"MRLN websites", studio_title:"Websites for local businesses.", studio_lead:"I design and build a website for your business, put it online and keep it updated. When something needs changing, you email me.",
+      studio_f1:"Start from one of my example designs, adapted to your business.", studio_f2:"Hosting and updates are included in the monthly fee.", studio_f3:"There are four example sites you can click through.",
+      studio_shot_alt:"Demo site for a fictional plumber, NordVand VVS",
+      foot:"A money and health app, and websites for local businesses."},
+  da:{eyebrow:"Velkommen til MRLN", h1:"Hvad leder du efter?",
+      lead:"Under navnet MRLN laver jeg to ting: en app til økonomi og sundhed, og hjemmesider til lokale virksomheder. Vælg herunder, eller scroll ned og læs om begge dele.",
+      app_tag:"Appen", app_h:"MRLN-appen", app_p:"Hold styr på budget, træning, måltider og planer i én app. Det, du skriver ind, gemmes på din egen enhed.", app_cta:"MRLN-appen", app_cta2:"Læs om appen",
+      studio_tag:"Hjemmesider", studio_h:"Hjemmesider fra MRLN", studio_p:"Jeg laver hjemmesider til lokale virksomheder, sørger for hosting og holder dem opdateret for et fast månedligt beløb.", studio_cta:"Se eksempler", studio_cta2:"Se eksempler",
+      scrollcue:"Læs mere om begge dele",
+      app_kicker:"MRLN-appen", app_title:"Økonomi, sundhed og planer i én app.", app_lead:"Skriv dit budget, din indkomst, træning, måltider, kalender og noter ind ét sted. Du skal ikke oprette en konto, og det hele gemmes i browseren på din enhed.",
+      app_f1:"Se, hvor pengene går hen hver måned, og planlæg fremad.", app_f2:"Registrér din vægt, træning og dine måltider.", app_f3:"Virker uden internet, når den først er indlæst.",
+      app_shot_alt:"MRLN-budgetskærmen med eksempeldata",
+      studio_kicker:"Hjemmesider fra MRLN", studio_title:"Hjemmesider til lokale virksomheder.", studio_lead:"Jeg designer og bygger en hjemmeside til din virksomhed, lægger den online og holder den opdateret. Skal noget ændres, sender du mig en mail.",
+      studio_f1:"Vi tager udgangspunkt i et af mine eksempler og tilpasser det til din virksomhed.", studio_f2:"Hosting og opdateringer er med i den månedlige pris.", studio_f3:"Der er fire eksempler, du kan klikke rundt i.",
+      studio_shot_alt:"Demoside for en opdigtet VVS-installatør, NordVand VVS",
+      foot:"En app til økonomi og sundhed, og hjemmesider til lokale virksomheder."},
+  de:{eyebrow:"Willkommen bei MRLN", h1:"Was suchen Sie?",
+      lead:"Unter dem Namen MRLN mache ich zwei Dinge: eine App für Finanzen und Gesundheit und Websites für lokale Unternehmen. Wählen Sie unten aus oder scrollen Sie weiter, um über beides zu lesen.",
+      app_tag:"Die App", app_h:"MRLN-App", app_p:"Budget, Training, Mahlzeiten und Pläne in einer App. Was Sie eingeben, wird auf Ihrem eigenen Gerät gespeichert.", app_cta:"MRLN-App", app_cta2:"Mehr über die App",
+      studio_tag:"Websites", studio_h:"Websites von MRLN", studio_p:"Ich baue Websites für lokale Unternehmen, hoste sie und halte sie gegen eine monatliche Gebühr aktuell.", studio_cta:"Beispielseiten ansehen", studio_cta2:"Beispielseiten ansehen",
+      scrollcue:"Mehr über beides lesen",
+      app_kicker:"Die MRLN-App", app_title:"Finanzen, Gesundheit und Pläne in einer App.", app_lead:"Erfassen Sie Budget, Einkommen, Training, Mahlzeiten, Kalender und Notizen an einem Ort. Sie brauchen kein Konto, und Ihre Einträge werden im Browser auf Ihrem Gerät gespeichert.",
+      app_f1:"Sehen Sie, wohin Ihr Geld jeden Monat geht, und planen Sie voraus.", app_f2:"Gewicht, Training und Mahlzeiten erfassen.", app_f3:"Funktioniert offline, sobald sie einmal geladen ist.",
+      app_shot_alt:"Der Budget-Bildschirm von MRLN mit Beispieldaten",
+      studio_kicker:"Websites von MRLN", studio_title:"Websites für lokale Unternehmen.", studio_lead:"Ich gestalte und baue eine Website für Ihr Unternehmen, stelle sie online und halte sie aktuell. Wenn sich etwas ändern soll, schreiben Sie mir eine E-Mail.",
+      studio_f1:"Wir starten mit einem meiner Beispieldesigns, angepasst an Ihr Unternehmen.", studio_f2:"Hosting und Updates sind in der Monatsgebühr enthalten.", studio_f3:"Es gibt vier Beispielseiten zum Durchklicken.",
+      studio_shot_alt:"Demoseite für einen erfundenen Installateur, NordVand VVS",
+      foot:"Eine App für Finanzen und Gesundheit und Websites für lokale Unternehmen."},
+  es:{eyebrow:"Bienvenido a MRLN", h1:"¿Qué estás buscando?",
+      lead:"Con el nombre MRLN hago dos cosas: una app de finanzas y salud, y sitios web para negocios locales. Elige una abajo o sigue bajando para leer sobre ambas.",
+      app_tag:"La app", app_h:"App MRLN", app_p:"Lleva tu presupuesto, entrenamientos, comidas y planes en una sola app. Lo que introduces se guarda en tu propio dispositivo.", app_cta:"App MRLN", app_cta2:"Leer sobre la app",
+      studio_tag:"Sitios web", studio_h:"Sitios web de MRLN", studio_p:"Creo sitios web para negocios locales, los alojo y los mantengo actualizados por una cuota mensual.", studio_cta:"Ver sitios de ejemplo", studio_cta2:"Ver sitios de ejemplo",
+      scrollcue:"Leer más sobre ambas",
+      app_kicker:"La app MRLN", app_title:"Dinero, salud y planes en una sola app.", app_lead:"Apunta tu presupuesto, ingresos, entrenamientos, comidas, calendario y notas en un solo lugar. No hace falta crear una cuenta, y tus datos se guardan en el navegador de tu dispositivo.",
+      app_f1:"Ve a dónde va tu dinero cada mes y planifica.", app_f2:"Registra tu peso, entrenamientos y comidas.", app_f3:"Funciona sin conexión una vez cargada.",
+      app_shot_alt:"La pantalla de presupuesto de MRLN con datos de ejemplo",
+      studio_kicker:"Sitios web de MRLN", studio_title:"Sitios web para negocios locales.", studio_lead:"Diseño y creo un sitio web para tu negocio, lo publico y lo mantengo actualizado. Cuando haya que cambiar algo, me escribes un correo.",
+      studio_f1:"Partimos de uno de mis diseños de ejemplo, adaptado a tu negocio.", studio_f2:"El alojamiento y las actualizaciones están incluidos en la cuota mensual.", studio_f3:"Hay cuatro sitios de ejemplo que puedes explorar.",
+      studio_shot_alt:"Sitio de demostración de un fontanero ficticio, NordVand VVS",
+      foot:"Una app de finanzas y salud, y sitios web para negocios locales."}
 };
 var lang="en";
 function applyLang(l){ if(!L10N[l])l="en"; lang=l; var t=L10N[l];
   document.querySelectorAll("[data-i18n]").forEach(function(el){ var k=el.getAttribute("data-i18n"); if(t[k]!=null) el.textContent=t[k]; });
-  document.querySelectorAll("[data-i18n-html]").forEach(function(el){ var k=el.getAttribute("data-i18n-html"); if(t[k]!=null) el.innerHTML=t[k]; });
+  document.querySelectorAll("[data-i18n-alt]").forEach(function(el){ var k=el.getAttribute("data-i18n-alt"); if(t[k]!=null) el.alt=t[k]; });
+  var shot=document.getElementById("appShot"); if(shot) shot.src="assets/howto/expenses"+(l==="en"?"":"."+l)+".png";
   document.documentElement.lang=l;
   document.querySelectorAll(".langs button").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-lang")===l?"true":"false"); });
   try{ localStorage.setItem("mrln_lang",l); }catch(e){}
